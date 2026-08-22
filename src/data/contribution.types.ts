@@ -28,7 +28,6 @@ export interface TrackedPrConfig {
   highlights: string[];
   order: number;
   layer?: ContributionLayerId;
-  stage?: string;
   fallbackBranch?: string;
   fallbackBaseBranch?: string;
 }
@@ -57,12 +56,11 @@ export interface PullRequestSnapshot {
   deletions: number;
   changedFilesCount: number;
   commitShas: string[];
-  reviewDecision: string | null;
+  reviewDecision: "APPROVED" | "CHANGES_REQUESTED" | "REVIEW_REQUESTED" | null;
   updatedAt: string;
   status: DerivedStatus;
   statusLabel: string;
   statusTone: StatusTone;
-  stage?: string;
   summary: string;
   highlights: string[];
   order: number;
@@ -97,7 +95,7 @@ export interface ContributionTotalsSnapshot {
 }
 
 export interface ContributionSnapshot {
-  schemaVersion: number;
+  schemaVersion: 2;
   generatedAt: string;
   lastAttemptAt?: string;
   source: "github" | "fallback";

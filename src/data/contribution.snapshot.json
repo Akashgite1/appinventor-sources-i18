@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "generatedAt": "2026-08-22T20:41:11.647Z",
   "source": "fallback",
   "stale": true,
@@ -477,11 +477,11 @@
         "0459a24de21e769a66dbe7d8768e208d5cb647d6",
         "ef7b97a8693807a6abb33503b7cb3d8291278803"
       ],
-      "reviewDecision": "COMMENTED",
+      "reviewDecision": "REVIEW_REQUESTED",
       "updatedAt": "2026-08-13T07:15:29Z",
-      "status": "upstream",
-      "statusLabel": "Upstream PR",
-      "statusTone": "purple",
+      "status": "in-review",
+      "statusLabel": "In Review",
+      "statusTone": "blue",
       "summary": "Foundational upstream pull request implementing static Designer text translations, core i18n data model, build pipeline asset extraction, and initial Android runtime support for App Inventor projects.",
       "highlights": [
         "Core Young Android translation data model and key generator",
@@ -617,11 +617,11 @@
         "68bbe6620db2d2cef97558f1c753ecbf82fe80db",
         "a563852ea0d1d09ce39c4a42f105555a4d072947"
       ],
-      "reviewDecision": "COMMENTED",
+      "reviewDecision": "REVIEW_REQUESTED",
       "updatedAt": "2026-08-13T07:15:28Z",
-      "status": "ready",
-      "statusLabel": "Ready",
-      "statusTone": "green",
+      "status": "in-review",
+      "statusLabel": "In Review",
+      "statusTone": "blue",
       "summary": "Optimized packaging by compiling translations into one lightweight manifest plus isolated, compact per-language JSON asset payloads.",
       "highlights": [
         "Modular manifest plus language asset partitioning",
@@ -650,11 +650,11 @@
         "11657b73ee7a52f8e3d95849b45c31e2ab6b372b",
         "ab7a1bcdb2ce620ee8c9e73a346bb528f96388ba"
       ],
-      "reviewDecision": "COMMENTED",
+      "reviewDecision": "REVIEW_REQUESTED",
       "updatedAt": "2026-08-21T19:05:18Z",
-      "status": "ready",
-      "statusLabel": "Ready",
-      "statusTone": "green",
+      "status": "in-review",
+      "statusLabel": "In Review",
+      "statusTone": "blue",
       "summary": "Migrated translation source persistence from project settings properties to a dedicated translations.json project file hooked into FileEditor autosave.",
       "highlights": [
         "Dedicated translations.json file node in project structure",
@@ -1159,5 +1159,5 @@
       "modified"
     ]
   ],
-  "lastAttemptAt": "2026-08-22T21:08:03.663Z"
+  "lastAttemptAt": "2026-08-22T21:16:27.835Z"
 }

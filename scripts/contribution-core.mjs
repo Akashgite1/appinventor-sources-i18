@@ -1,6 +1,16 @@
 import fs from "node:fs";
 import path from "node:path";
 
+export const ALLOWED_LIFECYCLE_STATUSES = new Set([
+  "merged",
+  "draft",
+  "closed",
+  "changes-requested",
+  "approved",
+  "in-review",
+  "open",
+]);
+
 /**
  * Classify a repository file path into an architectural layer.
  * Tests always take precedence across all components and platforms.
@@ -47,33 +57,6 @@ export function classifyFileLayer(filePath, overrides = {}) {
  * 7. Open
  */
 export function deriveStatus(prData, reviews = []) {
-  // 1. Merged
-  if (prData.merged_at) {
-    return {
-      status: "merged",
-      statusLabel: "Merged",
-      statusTone: "purple",
-    };
-  }
-
-  // 2. Draft
-  if (prData.draft) {
-    return {
-      status: "draft",
-      statusLabel: "Draft",
-      statusTone: "gray",
-    };
-  }
-
-  // 3. Closed without merging
-  if (prData.state === "closed" && !prData.merged_at) {
-    return {
-      status: "closed",
-      statusLabel: "Closed",
-      statusTone: "gray",
-    };
-  }
-
   // Group reviews by reviewer to determine their latest verdict
   // A newer APPROVED supersedes an older CHANGES_REQUESTED from the same reviewer.
   const latestVerdictByUser = new Map();
@@ -90,34 +73,75 @@ export function deriveStatus(prData, reviews = []) {
   }
 
   const latestStates = Array.from(latestVerdictByUser.values());
+  let reviewDecision = null;
+  if (latestStates.includes("CHANGES_REQUESTED")) {
+    reviewDecision = "CHANGES_REQUESTED";
+  } else if (latestStates.includes("APPROVED")) {
+    reviewDecision = "APPROVED";
+  } else if (
+    (prData.requested_reviewers && prData.requested_reviewers.length > 0) ||
+    (reviews && reviews.length > 0)
+  ) {
+    reviewDecision = "REVIEW_REQUESTED";
+  }
+
+  // 1. Merged
+  if (prData.merged_at) {
+    return {
+      status: "merged",
+      statusLabel: "Merged",
+      statusTone: "purple",
+      reviewDecision,
+    };
+  }
+
+  // 2. Draft
+  if (prData.draft) {
+    return {
+      status: "draft",
+      statusLabel: "Draft",
+      statusTone: "gray",
+      reviewDecision,
+    };
+  }
+
+  // 3. Closed without merging
+  if (prData.state === "closed" && !prData.merged_at) {
+    return {
+      status: "closed",
+      statusLabel: "Closed",
+      statusTone: "gray",
+      reviewDecision,
+    };
+  }
 
   // 4. Changes requested
-  if (latestStates.includes("CHANGES_REQUESTED")) {
+  if (reviewDecision === "CHANGES_REQUESTED") {
     return {
       status: "changes-requested",
       statusLabel: "Changes Requested",
       statusTone: "amber",
+      reviewDecision,
     };
   }
 
   // 5. Approved
-  if (latestStates.includes("APPROVED")) {
+  if (reviewDecision === "APPROVED") {
     return {
       status: "approved",
       statusLabel: "Approved",
       statusTone: "green",
+      reviewDecision,
     };
   }
 
   // 6. In review
-  if (
-    (prData.requested_reviewers && prData.requested_reviewers.length > 0) ||
-    (reviews && reviews.length > 0)
-  ) {
+  if (reviewDecision === "REVIEW_REQUESTED") {
     return {
       status: "in-review",
       statusLabel: "In Review",
       statusTone: "blue",
+      reviewDecision,
     };
   }
 
@@ -126,11 +150,12 @@ export function deriveStatus(prData, reviews = []) {
     status: "open",
     statusLabel: "Open",
     statusTone: "teal",
+    reviewDecision: null,
   };
 }
 
 /**
- * Aggregates raw GitHub PR results into the static contribution snapshot schema.
+ * Aggregates raw GitHub PR results into the static contribution snapshot schema v2.
  */
 export function aggregateGithubData(prRawResults, configData) {
   const {
@@ -141,7 +166,6 @@ export function aggregateGithubData(prRawResults, configData) {
 
   const commitShaSet = new Set();
   const fileMap = new Map(); // filePath -> { path, additions, deletions, kind, previousFilename, layer }
-
   const pullRequestsSnapshot = [];
 
   for (const item of prRawResults) {
@@ -209,7 +233,7 @@ export function aggregateGithubData(prRawResults, configData) {
     }
 
     // Compute derived PR status
-    const { status, statusLabel, statusTone } = deriveStatus(prData, reviews);
+    const { status, statusLabel, statusTone, reviewDecision } = deriveStatus(prData, reviews);
 
     pullRequestsSnapshot.push({
       id: config.id,
@@ -228,12 +252,11 @@ export function aggregateGithubData(prRawResults, configData) {
       deletions: prData.deletions ?? 0,
       changedFilesCount: prData.changed_files ?? files.length,
       commitShas: commits.map((c) => c.sha).filter(Boolean),
-      reviewDecision: reviews?.length ? reviews[reviews.length - 1].state : null,
+      reviewDecision,
       updatedAt: prData.updated_at || new Date().toISOString(),
       status,
       statusLabel,
       statusTone,
-      stage: config.stage,
       summary: config.summary,
       highlights: config.highlights || [],
       order: config.order ?? 0,
@@ -307,8 +330,8 @@ export function aggregateGithubData(prRawResults, configData) {
   );
   fileChangesTuples.sort((a, b) => b[1] - a[1] || b[2] - a[2] || a[0].localeCompare(b[0]));
 
-  return {
-    schemaVersion: 1,
+  const snapshot = {
+    schemaVersion: 2,
     generatedAt: new Date().toISOString(),
     source: "github",
     stale: false,
@@ -324,28 +347,154 @@ export function aggregateGithubData(prRawResults, configData) {
     unclassifiedFiles,
     fileChanges: fileChangesTuples,
   };
+
+  validateContributionSnapshot(snapshot);
+  return snapshot;
+}
+
+/**
+ * Validates a contribution snapshot against schema v2 constraints.
+ * Throws a detailed Error if validation fails.
+ */
+export function validateContributionSnapshot(snapshot) {
+  if (!snapshot || typeof snapshot !== "object") {
+    throw new Error("Snapshot must be a non-null object.");
+  }
+  if (snapshot.schemaVersion !== 2) {
+    throw new Error(`Unsupported schemaVersion ${snapshot.schemaVersion}. Expected schemaVersion: 2.`);
+  }
+  if (typeof snapshot.generatedAt !== "string" || !snapshot.generatedAt) {
+    throw new Error("Missing or invalid generatedAt timestamp.");
+  }
+  if (snapshot.source !== "github" && snapshot.source !== "fallback") {
+    throw new Error(`Invalid snapshot source "${snapshot.source}". Must be 'github' or 'fallback'.`);
+  }
+  if (typeof snapshot.stale !== "boolean") {
+    throw new Error("Missing or invalid stale flag.");
+  }
+
+  // Totals validation
+  const { totals, layers, pullRequests, fileChanges, unclassifiedFiles = [] } = snapshot;
+  if (!totals || typeof totals !== "object") {
+    throw new Error("Missing totals object.");
+  }
+  for (const metric of ["uniqueCommits", "filesTouched", "linesAdded", "linesDeleted", "newFiles"]) {
+    if (typeof totals[metric] !== "number" || totals[metric] < 0 || !Number.isFinite(totals[metric])) {
+      throw new Error(`Invalid totals.${metric}: expected non-negative finite number.`);
+    }
+  }
+
+  // Arrays check
+  if (!Array.isArray(layers) || !Array.isArray(pullRequests) || !Array.isArray(fileChanges)) {
+    throw new Error("Snapshot must contain layers, pullRequests, and fileChanges arrays.");
+  }
+
+  // File reconciliation
+  if (fileChanges.length !== totals.filesTouched) {
+    throw new Error(
+      `fileChanges length (${fileChanges.length}) does not match totals.filesTouched (${totals.filesTouched}).`
+    );
+  }
+
+  const seenFilePaths = new Set();
+  for (const fileTuple of fileChanges) {
+    if (!Array.isArray(fileTuple) || typeof fileTuple[0] !== "string") {
+      throw new Error("Invalid fileChange tuple format.");
+    }
+    const filePath = fileTuple[0];
+    if (seenFilePaths.has(filePath)) {
+      throw new Error(`Duplicate file path detected in fileChanges: ${filePath}`);
+    }
+    seenFilePaths.add(filePath);
+  }
+
+  // Layer reconciliation
+  const layerAdditionsSum = layers.reduce((sum, l) => sum + (l.additions || 0), 0);
+  const layerDeletionsSum = layers.reduce((sum, l) => sum + (l.deletions || 0), 0);
+  const layerFilesCount = layers.reduce((sum, l) => sum + (l.files?.length || 0), 0);
+
+  const unclassifiedAdditionsSum = unclassifiedFiles.reduce((sum, f) => sum + (f[1] || 0), 0);
+  const unclassifiedDeletionsSum = unclassifiedFiles.reduce((sum, f) => sum + (f[2] || 0), 0);
+  const unclassifiedFilesCount = unclassifiedFiles.length;
+
+  if (layerAdditionsSum + unclassifiedAdditionsSum !== totals.linesAdded) {
+    throw new Error(
+      `Layer additions (${layerAdditionsSum} + ${unclassifiedAdditionsSum}) do not match totals.linesAdded (${totals.linesAdded}).`
+    );
+  }
+  if (layerDeletionsSum + unclassifiedDeletionsSum !== totals.linesDeleted) {
+    throw new Error(
+      `Layer deletions (${layerDeletionsSum} + ${unclassifiedDeletionsSum}) do not match totals.linesDeleted (${totals.linesDeleted}).`
+    );
+  }
+  if (layerFilesCount + unclassifiedFilesCount !== totals.filesTouched) {
+    throw new Error(
+      `Layer files count (${layerFilesCount} + ${unclassifiedFilesCount}) does not match totals.filesTouched (${totals.filesTouched}).`
+    );
+  }
+
+  // PR validation
+  const seenPrIds = new Set();
+  for (const pr of pullRequests) {
+    if (!pr.id || typeof pr.id !== "string") {
+      throw new Error(`Missing PR id: ${JSON.stringify(pr)}`);
+    }
+    if (seenPrIds.has(pr.id)) {
+      throw new Error(`Duplicate PR ID detected: ${pr.id}`);
+    }
+    seenPrIds.add(pr.id);
+
+    if (!ALLOWED_LIFECYCLE_STATUSES.has(pr.status)) {
+      throw new Error(
+        `Invalid PR status "${pr.status}" on ${pr.id}. Must be one of: ${Array.from(ALLOWED_LIFECYCLE_STATUSES).join(", ")}.`
+      );
+    }
+    if (typeof pr.isUpstream !== "boolean") {
+      throw new Error(`Missing or invalid isUpstream boolean on ${pr.id}`);
+    }
+  }
+
+  return true;
 }
 
 /**
  * Atomically writes a JSON object to target file path using a temporary file in the same directory.
- * Removes temporary files if an error occurs.
+ * Removes temporary files if an error occurs. Supports dependency-injected fs implementation.
  */
-export function atomicWriteJson(targetPath, data) {
+export function atomicWriteJson(targetPath, data, fsImpl = fs) {
   const targetDir = path.dirname(targetPath);
-  fs.mkdirSync(targetDir, { recursive: true });
+  fsImpl.mkdirSync(targetDir, { recursive: true });
 
   const randomSuffix = `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
   const tempPath = path.join(targetDir, `.tmp-${path.basename(targetPath)}-${randomSuffix}.tmp`);
 
   try {
-    fs.writeFileSync(tempPath, JSON.stringify(data, null, 2) + "\n", "utf-8");
-    fs.renameSync(tempPath, targetPath);
+    fsImpl.writeFileSync(tempPath, JSON.stringify(data, null, 2) + "\n", "utf-8");
+    fsImpl.renameSync(tempPath, targetPath);
   } catch (err) {
-    if (fs.existsSync(tempPath)) {
+    if (fsImpl.existsSync && fsImpl.existsSync(tempPath)) {
       try {
-        fs.unlinkSync(tempPath);
+        fsImpl.unlinkSync(tempPath);
       } catch (_) {}
     }
     throw err;
   }
+}
+
+/**
+ * Marks a checked-in snapshot as fallback while preserving generatedAt and atomic writing.
+ */
+export function markSnapshotAsFallback(snapshotPath, attemptedAt = new Date().toISOString(), fsImpl = fs) {
+  if (!fsImpl.existsSync(snapshotPath)) {
+    throw new Error(`Snapshot file does not exist at ${snapshotPath}`);
+  }
+
+  const existing = JSON.parse(fsImpl.readFileSync(snapshotPath, "utf-8"));
+  existing.stale = true;
+  existing.source = "fallback";
+  existing.lastAttemptAt = attemptedAt;
+
+  validateContributionSnapshot(existing);
+  atomicWriteJson(snapshotPath, existing, fsImpl);
+  return existing;
 }

@@ -134,6 +134,15 @@ export function DeliverablesSection() {
           >
             All PRs <span className="count-pill">{statusCounts.all}</span>
           </button>
+          {statusCounts.active > 0 && statusCounts.active !== statusCounts.all && (
+            <button
+              type="button"
+              className={`filter-tab ${filter === "active" ? "active" : ""}`}
+              onClick={() => setFilter("active")}
+            >
+              Active <span className="count-pill">{statusCounts.active}</span>
+            </button>
+          )}
           {statusCounts.upstream > 0 && (
             <button
               type="button"
@@ -154,6 +163,7 @@ export function DeliverablesSection() {
             </button>
           ))}
         </div>
+
 
         <div className="pr-view-toggle">
           <button

@@ -8,12 +8,32 @@ import {
   deriveStatus,
   classifyFileLayer,
   atomicWriteJson,
+  markSnapshotAsFallback,
+  validateContributionSnapshot,
+  ALLOWED_LIFECYCLE_STATUSES,
 } from "../scripts/contribution-core.mjs";
 
 const configPath = path.resolve("src/data/contribution.config.json");
 const configData = JSON.parse(fs.readFileSync(configPath, "utf-8"));
+const realSnapshotPath = path.resolve("src/data/contribution.snapshot.json");
 
-describe("GitHub Data Aggregator & Sync Audit Tests", () => {
+describe("GitHub Data Aggregator & Hardening Tests", () => {
+  it("validates the real checked-in contribution.snapshot.json against schemaVersion 2", () => {
+    const realSnapshot = JSON.parse(fs.readFileSync(realSnapshotPath, "utf-8"));
+    assert.equal(realSnapshot.schemaVersion, 2);
+    assert.ok(validateContributionSnapshot(realSnapshot));
+
+    for (const pr of realSnapshot.pullRequests) {
+      assert.ok(
+        ALLOWED_LIFECYCLE_STATUSES.has(pr.status),
+        `Status ${pr.status} on PR ${pr.id} must be an allowed lifecycle status.`
+      );
+      assert.notEqual(pr.status, "ready", "Status 'ready' is not an allowed lifecycle status");
+      assert.notEqual(pr.status, "upstream", "Status 'upstream' is not an allowed lifecycle status");
+      assert.equal(typeof pr.isUpstream, "boolean");
+    }
+  });
+
   it("verifies one shared configuration source is loaded from contribution.config.json", () => {
     assert.ok(Array.isArray(configData.trackedPullRequests));
     assert.ok(Array.isArray(configData.contributionLayers));
@@ -111,7 +131,6 @@ describe("GitHub Data Aggregator & Sync Audit Tests", () => {
     ];
 
     const snapshot = aggregateGithubData(mockPrs, configData);
-    // Should be exactly 1 file touched (the renamed file inheriting the history of the old path)
     assert.equal(snapshot.totals.filesTouched, 1);
     assert.equal(snapshot.totals.linesAdded, 45); // 30 + 15
     assert.equal(snapshot.totals.linesDeleted, 7); // 5 + 2
@@ -130,6 +149,7 @@ describe("GitHub Data Aggregator & Sync Audit Tests", () => {
     ];
     const statusA = deriveStatus({ state: "open" }, reviewsA);
     assert.equal(statusA.status, "approved");
+    assert.equal(statusA.reviewDecision, "APPROVED");
 
     // Reviewer 1 approved, but later requested changes
     const reviewsB = [
@@ -138,6 +158,7 @@ describe("GitHub Data Aggregator & Sync Audit Tests", () => {
     ];
     const statusB = deriveStatus({ state: "open" }, reviewsB);
     assert.equal(statusB.status, "changes-requested");
+    assert.equal(statusB.reviewDecision, "CHANGES_REQUESTED");
 
     // Reviewer 1 approved, but Reviewer 2 requested changes
     const reviewsC = [
@@ -146,6 +167,7 @@ describe("GitHub Data Aggregator & Sync Audit Tests", () => {
     ];
     const statusC = deriveStatus({ state: "open" }, reviewsC);
     assert.equal(statusC.status, "changes-requested");
+    assert.equal(statusC.reviewDecision, "CHANGES_REQUESTED");
   });
 
   it("strictly adheres to objective lifecycle priority (merged > draft > closed > changes-requested > approved > in-review > open)", () => {
@@ -206,48 +228,155 @@ describe("GitHub Data Aggregator & Sync Audit Tests", () => {
     assert.equal(classifyFileLayer("some/random/untracked/script.py"), "unclassified");
   });
 
-  it("proves successful snapshot writes are atomic and clean up temporary files", () => {
-    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "snapshot-test-"));
-    const targetFile = path.join(tempDir, "test.snapshot.json");
-    const testData = { version: 1, test: true, timestamp: new Date().toISOString() };
+  it("proves real filesystem fallback handling preserves generatedAt and adds lastAttemptAt", () => {
+    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "fallback-test-"));
+    const tempSnapshotPath = path.join(tempDir, "contribution.snapshot.json");
 
-    atomicWriteJson(targetFile, testData);
+    const originalGeneratedAt = "2026-08-15T10:00:00.000Z";
+    const testSnapshot = {
+      schemaVersion: 2,
+      generatedAt: originalGeneratedAt,
+      source: "github",
+      stale: false,
+      totals: { uniqueCommits: 5, filesTouched: 1, linesAdded: 10, linesDeleted: 2, newFiles: 1 },
+      layers: [
+        {
+          id: "editor",
+          label: "Translation editor",
+          role: "Authoring",
+          connection: "Source",
+          files: [["appengine/Panel.java", 10, 2, "new"]],
+          additions: 10,
+          deletions: 2,
+        },
+      ],
+      pullRequests: [
+        {
+          id: "pr-1",
+          number: 1,
+          repo: "test/repo",
+          isUpstream: false,
+          prUrl: "https://github.com/test/repo/pull/1",
+          title: "Test PR",
+          branch: "test",
+          baseBranch: "master",
+          headSha: "abc",
+          state: "open",
+          isDraft: false,
+          mergedAt: null,
+          additions: 10,
+          deletions: 2,
+          changedFilesCount: 1,
+          commitShas: ["abc"],
+          reviewDecision: null,
+          updatedAt: originalGeneratedAt,
+          status: "open",
+          statusLabel: "Open",
+          statusTone: "teal",
+          summary: "Summary",
+          highlights: [],
+          order: 1,
+        },
+      ],
+      unclassifiedFiles: [],
+      fileChanges: [["appengine/Panel.java", 10, 2, "new"]],
+    };
 
-    assert.ok(fs.existsSync(targetFile));
-    const content = JSON.parse(fs.readFileSync(targetFile, "utf-8"));
-    assert.equal(content.version, 1);
-    assert.equal(content.test, true);
+    atomicWriteJson(tempSnapshotPath, testSnapshot);
 
-    const dirFiles = fs.readdirSync(tempDir);
-    // Only the target file should exist, no leftover .tmp files
-    assert.equal(dirFiles.length, 1);
-    assert.equal(dirFiles[0], "test.snapshot.json");
+    const testAttemptTime = "2026-08-23T02:00:00.000Z";
+    markSnapshotAsFallback(tempSnapshotPath, testAttemptTime);
+
+    // Reload from filesystem and verify
+    const reloaded = JSON.parse(fs.readFileSync(tempSnapshotPath, "utf-8"));
+    assert.equal(reloaded.stale, true);
+    assert.equal(reloaded.source, "fallback");
+    assert.equal(reloaded.generatedAt, originalGeneratedAt, "generatedAt must be preserved");
+    assert.equal(reloaded.lastAttemptAt, testAttemptTime);
+    assert.ok(validateContributionSnapshot(reloaded));
 
     fs.rmSync(tempDir, { recursive: true, force: true });
   });
 
-  it("proves failed synchronization marks fallback stale and sets source=fallback while preserving generatedAt", () => {
-    const originalGeneratedAt = "2026-08-01T12:00:00.000Z";
-    const existingSnapshot = {
-      schemaVersion: 1,
-      generatedAt: originalGeneratedAt,
-      source: "github",
-      stale: false,
-      totals: { uniqueCommits: 50, filesTouched: 59, linesAdded: 8885, linesDeleted: 580, newFiles: 27 },
-      layers: [],
-      pullRequests: [],
-      unclassifiedFiles: [],
-      fileChanges: [],
+  it("proves atomic failure cleans up temporary files and leaves original intact", () => {
+    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "atomic-fail-test-"));
+    const targetFile = path.join(tempDir, "original.json");
+    const originalContent = { state: "original-safe" };
+    fs.writeFileSync(targetFile, JSON.stringify(originalContent), "utf-8");
+
+    const failingFs = {
+      ...fs,
+      mkdirSync: fs.mkdirSync.bind(fs),
+      writeFileSync: fs.writeFileSync.bind(fs),
+      renameSync: () => {
+        throw new Error("Simulated I/O rename failure");
+      },
+      existsSync: fs.existsSync.bind(fs),
+      unlinkSync: fs.unlinkSync.bind(fs),
     };
 
-    // Simulate fallback update
-    existingSnapshot.stale = true;
-    existingSnapshot.source = "fallback";
-    existingSnapshot.lastAttemptAt = new Date().toISOString();
+    assert.throws(
+      () => {
+        atomicWriteJson(targetFile, { state: "corrupted" }, failingFs);
+      },
+      /Simulated I\/O rename failure/
+    );
 
-    assert.equal(existingSnapshot.stale, true);
-    assert.equal(existingSnapshot.source, "fallback");
-    assert.equal(existingSnapshot.generatedAt, originalGeneratedAt);
-    assert.ok(existingSnapshot.lastAttemptAt);
+    // Verify original file is still intact
+    const after = JSON.parse(fs.readFileSync(targetFile, "utf-8"));
+    assert.deepEqual(after, originalContent);
+
+    // Verify no temporary files remain
+    const files = fs.readdirSync(tempDir);
+    assert.equal(files.length, 1);
+    assert.equal(files[0], "original.json");
+
+    fs.rmSync(tempDir, { recursive: true, force: true });
   });
+
+  it("rejects invalid snapshot structures with validateContributionSnapshot", () => {
+    assert.throws(() => validateContributionSnapshot(null), /non-null object/);
+    assert.throws(() => validateContributionSnapshot({ schemaVersion: 1 }), /Unsupported schemaVersion/);
+    assert.throws(
+      () =>
+        validateContributionSnapshot({
+          schemaVersion: 2,
+          generatedAt: "2026-08-01",
+          source: "github",
+          stale: false,
+          totals: { uniqueCommits: -1, filesTouched: 0, linesAdded: 0, linesDeleted: 0, newFiles: 0 },
+          layers: [],
+          pullRequests: [],
+          fileChanges: [],
+        }),
+      /Invalid totals.uniqueCommits/
+    );
+    assert.throws(
+      () =>
+        validateContributionSnapshot({
+          schemaVersion: 2,
+          generatedAt: "2026-08-01",
+          source: "github",
+          stale: false,
+          totals: { uniqueCommits: 1, filesTouched: 1, linesAdded: 10, linesDeleted: 0, newFiles: 1 },
+          layers: [
+            {
+              id: "editor",
+              label: "Editor",
+              role: "Role",
+              connection: "Conn",
+              files: [["a.txt", 10, 0, "new"]],
+              additions: 10,
+              deletions: 0,
+            },
+          ],
+          pullRequests: [
+            { id: "pr-1", status: "invalid-status", isUpstream: false },
+          ],
+          fileChanges: [["a.txt", 10, 0, "new"]],
+        }),
+      /Invalid PR status/
+    );
+  });
+
 });

@@ -3,7 +3,12 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { aggregateGithubData, atomicWriteJson } from "./contribution-core.mjs";
+import {
+  aggregateGithubData,
+  atomicWriteJson,
+  markSnapshotAsFallback,
+  validateContributionSnapshot,
+} from "./contribution-core.mjs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -73,13 +78,9 @@ export async function run() {
       const commitsUrl = `https://api.github.com/repos/${prConfig.repo}/pulls/${prConfig.number}/commits`;
       const commits = await fetchPaginated(commitsUrl, token);
 
-      let reviews = [];
-      try {
-        const reviewsUrl = `https://api.github.com/repos/${prConfig.repo}/pulls/${prConfig.number}/reviews`;
-        reviews = await fetchPaginated(reviewsUrl, token);
-      } catch (reviewErr) {
-        console.warn(`  ⚠️ Could not fetch reviews for PR #${prConfig.number}: ${reviewErr.message}`);
-      }
+      // Fetch reviews strictly; failure to fetch review data fails the fresh sync
+      const reviewsUrl = `https://api.github.com/repos/${prConfig.repo}/pulls/${prConfig.number}/reviews`;
+      const reviews = await fetchPaginated(reviewsUrl, token);
 
       rawResults.push({
         config: prConfig,
@@ -91,6 +92,7 @@ export async function run() {
     }
 
     const snapshot = aggregateGithubData(rawResults, configData);
+    validateContributionSnapshot(snapshot);
     atomicWriteJson(snapshotPath, snapshot);
 
     if (process.env.GITHUB_OUTPUT) {
@@ -99,7 +101,7 @@ export async function run() {
       } catch (_) {}
     }
 
-    console.log("✅ Successfully synchronized GitHub snapshot!");
+    console.log("✅ Successfully synchronized GitHub snapshot (schemaVersion: 2)!");
     console.log(
       `📊 Totals: ${snapshot.totals.uniqueCommits} commits, ${snapshot.totals.filesTouched} files touched (+${snapshot.totals.linesAdded}/-${snapshot.totals.linesDeleted}), ${snapshot.totals.newFiles} new files.`
     );
@@ -107,34 +109,32 @@ export async function run() {
   } catch (err) {
     console.warn(`⚠️ GitHub synchronization encountered an error: ${err.message}`);
 
+    if (process.env.GITHUB_OUTPUT) {
+      try {
+        fs.appendFileSync(process.env.GITHUB_OUTPUT, "is_fresh=false\n");
+      } catch (_) {}
+    }
+
     if (fs.existsSync(snapshotPath)) {
       console.log("🛡️ Preserving existing fallback snapshot...");
       try {
-        const existing = JSON.parse(fs.readFileSync(snapshotPath, "utf-8"));
-        existing.stale = true;
-        existing.source = "fallback";
-        existing.lastAttemptAt = new Date().toISOString();
-
-        atomicWriteJson(snapshotPath, existing);
-
-        if (process.env.GITHUB_OUTPUT) {
-          try {
-            fs.appendFileSync(process.env.GITHUB_OUTPUT, "is_fresh=false\n");
-          } catch (_) {}
-        }
-
+        markSnapshotAsFallback(snapshotPath);
         console.log("⚠️ Marked existing snapshot as fallback/stale. Build may continue with cached data.");
-        process.exit(0);
+        process.exitCode = 0;
+        return;
       } catch (parseErr) {
-        console.error("❌ Failed to parse existing fallback snapshot.", parseErr);
-        process.exit(1);
+        console.error("❌ Failed to process fallback snapshot.", parseErr);
+        process.exitCode = 1;
+        return;
       }
     } else {
       console.error("❌ No fallback snapshot available. Build cannot continue.");
-      process.exit(1);
+      process.exitCode = 1;
+      return;
     }
   }
 }
+
 
 if (process.argv[1] && path.resolve(process.argv[1]) === path.resolve(__filename)) {
   run();
