@@ -26,8 +26,8 @@ import { BuildPipelineSection } from "./components/sections/BuildPipelineSection
 import { ContributionMapSection } from "./components/sections/ContributionMapSection";
 
 import { TestingSection } from "./components/sections/TestingSection";
-import { ReviewSection } from "./components/sections/ReviewSection";
 import { ContributorGuideSection } from "./components/sections/ContributorGuideSection";
+
 import { FutureWorkSection } from "./components/sections/FutureWorkSection";
 import { LinksSection } from "./components/sections/LinksSection";
 
@@ -101,8 +101,8 @@ export default function Home() {
           visibleDeletions={visibleDeletions}
         />
         <TestingSection />
-        <ReviewSection />
         <ContributorGuideSection />
+
         <FutureWorkSection />
         <LinksSection />
 

@@ -16,8 +16,8 @@ export const navigation = [
   { group: "Verification", items: [
     { id: "contribution-map", label: "Contribution map" },
     { id: "testing", label: "Testing evidence" },
-    { id: "review", label: "Review iterations" },
   ]},
+
   { group: "Handoff", items: [
     { id: "contributors", label: "Contributor guide" },
     { id: "future", label: "Future work" },
