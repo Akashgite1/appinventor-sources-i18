@@ -178,11 +178,24 @@ code { padding: 0.12rem 0.36rem; border-radius: 5px; background: rgba(110,118,12
 .doc-section + .doc-section { padding-top: 64px; }
 .doc-section h2 { margin: 0 0 18px; font-size: 29px; line-height: 1.25; letter-spacing: -.025em; }
 .doc-section h2 a { margin-left: -24px; padding-right: 8px; color: #484f58; font-weight: 400; opacity: 0; transition: opacity .15s; }
-.doc-section h2:hover a { opacity: 1; }
 .doc-section h3 { margin: 34px 0 12px; font-size: 19px; }
-.doc-section > p, .doc-section > ul { max-width: 820px; color: #b1bac4; }
+.doc-section h4 { margin: 20px 0 8px; font-size: 16px; color: var(--text); }
+.doc-section > p, .doc-section > ul, .doc-section > ol { max-width: 820px; color: #b1bac4; }
 .doc-section ul { padding-left: 20px; }
+.doc-section ol { padding-left: 22px; }
 .doc-section li { margin: 7px 0; }
+.subtext-note { color: var(--muted); font-size: 13px; margin-top: 6px; }
+
+
+/* ── Setup step cards in Editor section ── */
+.setup-steps-container { display: flex; flex-direction: column; gap: 14px; margin: 18px 0 28px; }
+.setup-step-card { background: var(--panel-soft); border: 1px solid var(--border-soft); border-radius: 9px; padding: 18px 20px; }
+.setup-step-card h4 { margin: 0 0 10px; font-size: 16px; color: #d2a8ff; }
+.setup-step-card p { margin: 0 0 10px; color: #b1bac4; font-size: 14px; line-height: 1.55; }
+.setup-step-card p:last-child { margin-bottom: 0; }
+.property-specs, .inner-steps { margin: 8px 0 12px; padding-left: 20px; color: #8b949e; font-size: 13px; }
+.property-specs li, .inner-steps li { margin: 4px 0; }
+
 
 /* ── Hero ── */
 .hero { padding-top: 0; }
