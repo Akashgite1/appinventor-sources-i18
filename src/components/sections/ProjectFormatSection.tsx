@@ -7,61 +7,159 @@ export function ProjectFormatSection() {
         <a href="#project-format">#</a> Project format
       </h2>
       <p>
-        Editable translations are stored in a dedicated project file rather than project settings.
-        This avoids putting potentially large JSON data into the settings object and allows the
-        existing file editor lifecycle to persist it.
+        Editable translation data is stored in <code>youngandroidproject/translations.json</code>.
+        This project-level source file contains the configured languages, static and dynamic
+        translation entries, source metadata, and translated values. It is autosaved through App
+        Inventor’s standard project-file lifecycle, travels with the project archive, and is read
+        by the buildserver when generating runtime assets.
       </p>
-      <div className="code-block">
-        <div>
-          <span>Project archive</span>
-          <button
-            onClick={() =>
-              navigator.clipboard?.writeText("youngandroidproject/translations.json")
-            }
-          >
-            Copy path
-          </button>
-        </div>
-        <pre>
-          <code>{`youngandroidproject/
-├── project.properties
-└── translations.json
 
-assets/i18n/                 # compiled application only
+      <ul className="check-list">
+        <li>
+          <Icon name="check" />
+          <span>
+            Stored at <code>youngandroidproject/translations.json</code>.
+          </span>
+        </li>
+        <li>
+          <Icon name="check" />
+          <span>Created automatically for new projects.</span>
+        </li>
+        <li>
+          <Icon name="check" />
+          <span>Added when older projects without the file are opened.</span>
+        </li>
+        <li>
+          <Icon name="check" />
+          <span>
+            Loaded and autosaved through the standard <code>FileEditor</code> lifecycle.
+          </span>
+        </li>
+        <li>
+          <Icon name="check" />
+          <span>
+            Included with the editable project archive (<code>.aia</code>).
+          </span>
+        </li>
+        <li>
+          <Icon name="check" />
+          <span>Read directly by the buildserver.</span>
+        </li>
+        <li>
+          <Icon name="check" />
+          <span>Converted into runtime assets during compilation.</span>
+        </li>
+      </ul>
+
+      <h3>Project archive vs compiled assets</h3>
+      <div className="format-grid">
+        <div className="code-block">
+          <div>
+            <span>Editable project source</span>
+            <button
+              onClick={() =>
+                navigator.clipboard?.writeText("youngandroidproject/translations.json")
+              }
+            >
+              Copy path
+            </button>
+          </div>
+          <pre>
+            <code>{`youngandroidproject/
+├── project.properties
+└── translations.json`}</code>
+          </pre>
+        </div>
+
+        <div className="code-block">
+          <div>
+            <span>Generated application assets</span>
+            <button
+              onClick={() =>
+                navigator.clipboard?.writeText("assets/i18n/manifest.json")
+              }
+            >
+              Copy path
+            </button>
+          </div>
+          <pre>
+            <code>{`assets/i18n/
 ├── manifest.json
 └── languages/
     ├── en.json
     ├── hi.json
     └── mr.json`}</code>
-        </pre>
+          </pre>
+        </div>
       </div>
+
       <h3>Source document</h3>
       <div className="code-block">
         <div>
           <span>translations.json</span>
+          <button
+            onClick={() =>
+              navigator.clipboard?.writeText(
+                JSON.stringify(
+                  {
+                    baseLanguage: "en",
+                    languages: ["hi", "mr", "fr", "de", "es"],
+                    entries: {
+                      i18n_d6905c89: {
+                        kind: "static",
+                        source: {
+                          screen: "Screen1",
+                          component: "Button1",
+                          type: "Button",
+                          property: "Text",
+                          baseText: "Continue",
+                        },
+                        translations: {
+                          hi: "जारी रखें",
+                          mr: "पुढे जा",
+                          fr: "Continuer",
+                          de: "Weiter",
+                          es: "Continuar",
+                        },
+                      },
+                    },
+                  },
+                  null,
+                  2
+                )
+              )
+            }
+          >
+            Copy JSON
+          </button>
         </div>
         <pre>
           <code>{`{
   "baseLanguage": "en",
-  "languages": ["en", "hi", "mr"],
+  "languages": ["hi", "mr", "fr", "de", "es"],
   "entries": {
-    "screen1.button1.text": {
-      "kind": "property",
+    "i18n_d6905c89": {
+      "kind": "static",
       "source": {
         "screen": "Screen1",
         "component": "Button1",
-        "property": "Text"
+        "type": "Button",
+        "property": "Text",
+        "baseText": "Continue"
       },
       "translations": {
-        "en": "Continue",
         "hi": "जारी रखें",
-        "mr": "पुढे जा"
+        "mr": "पुढे जा",
+        "fr": "Continuer",
+        "de": "Weiter",
+        "es": "Continuar"
       }
     }
   }
 }`}</code>
         </pre>
       </div>
+
       <div className="callout note">
         <Icon name="code" />
         <div>
