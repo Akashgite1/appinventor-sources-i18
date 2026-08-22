@@ -86,12 +86,19 @@ export function ProjectFormatSection() {
             <code>{`assets/i18n/
 ├── manifest.json
 └── languages/
-    ├── en.json
-    ├── hi.json
-    └── mr.json`}</code>
+    ├── en.json    # English (base)
+    ├── hi.json    # Hindi
+    ├── mr.json    # Marathi
+    ├── fr.json    # French
+    ├── de.json    # German
+    └── es.json    # Spanish`}</code>
           </pre>
         </div>
       </div>
+      <p>
+        The generator creates the base-language file (<code>en.json</code>) plus one file for every
+        configured target language.
+      </p>
 
       <h3>Source document</h3>
       <div className="code-block">
@@ -165,9 +172,9 @@ export function ProjectFormatSection() {
         <div>
           <strong>Language tags</strong>
           <p>
-            Canonical language, script, region, and numeric-region forms are accepted—for example{" "}
-            <code>mr</code>, <code>pt-BR</code>, <code>zh-Hans</code>, <code>zh-Hant-TW</code>, and{" "}
-            <code>es-419</code>.
+            Supported language-tag forms are language (<code>mr</code>), language-region (
+            <code>pt-BR</code>), language-script (<code>zh-Hans</code>), language-script-region (
+            <code>zh-Hant-TW</code>), and language-numeric-region (<code>es-419</code>).
           </p>
         </div>
       </div>
