@@ -23,8 +23,8 @@ import { ArchitectureSection } from "./components/sections/ArchitectureSection";
 import { ProjectFormatSection } from "./components/sections/ProjectFormatSection";
 import { EditorSection } from "./components/sections/EditorSection";
 import { BuildPipelineSection } from "./components/sections/BuildPipelineSection";
-import { RuntimesSection } from "./components/sections/RuntimesSection";
 import { ContributionMapSection } from "./components/sections/ContributionMapSection";
+
 import { TestingSection } from "./components/sections/TestingSection";
 import { ReviewSection } from "./components/sections/ReviewSection";
 import { ContributorGuideSection } from "./components/sections/ContributorGuideSection";
@@ -91,8 +91,8 @@ export default function Home() {
         <ProjectFormatSection />
         <EditorSection />
         <BuildPipelineSection />
-        <RuntimesSection />
         <ContributionMapSection
+
           activeLayer={activeLayer}
           setActiveLayer={setActiveLayer}
           layerStats={layerStats}

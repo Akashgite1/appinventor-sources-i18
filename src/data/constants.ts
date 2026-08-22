@@ -11,8 +11,8 @@ export const navigation = [
     { id: "project-format", label: "Project format" },
     { id: "editor", label: "Translation editor" },
     { id: "build-pipeline", label: "Build pipeline" },
-    { id: "runtimes", label: "Android & iOS" },
   ]},
+
   { group: "Verification", items: [
     { id: "contribution-map", label: "Contribution map" },
     { id: "testing", label: "Testing evidence" },
