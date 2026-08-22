@@ -41,10 +41,11 @@ export function ArchitectureSection() {
         <div>
           <small>Runtime</small>
           <strong>Android and iOS</strong>
-          <code>locale selection + fallback</code>
+          <code>device language + fallback</code>
           <p>
-            Platform-specific loaders select the best supported language, resolve fallback values,
-            format dynamic placeholders, and apply translated properties.
+            Android reads the device’s default locale, while iOS reads its first preferred language.
+            Each runtime loads the exact matching language file when available, otherwise tries the
+            language-only file, and uses the original base text when no matching translation is available.
           </p>
         </div>
       </div>
@@ -90,7 +91,9 @@ export function ArchitectureSection() {
             </tr>
             <tr>
               <td>Runtime</td>
-              <td>Select language, resolve fallback, format values, and apply properties</td>
+              <td>
+                Read the device language, load the exact or language-only translation, fall back to base text, format values, and apply properties.
+              </td>
               <td>
                 <Status tone="purple">Platform-specific</Status>
               </td>
