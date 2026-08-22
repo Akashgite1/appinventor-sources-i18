@@ -56,9 +56,9 @@ export interface PullRequestSnapshot {
   deletions: number;
   changedFilesCount: number;
   commitShas: string[];
-  reviewDecision: "APPROVED" | "CHANGES_REQUESTED" | "REVIEW_REQUESTED" | null;
   updatedAt: string;
   status: DerivedStatus;
+
   statusLabel: string;
   statusTone: StatusTone;
   summary: string;

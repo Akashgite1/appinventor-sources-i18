@@ -477,7 +477,6 @@
         "0459a24de21e769a66dbe7d8768e208d5cb647d6",
         "ef7b97a8693807a6abb33503b7cb3d8291278803"
       ],
-      "reviewDecision": "REVIEW_REQUESTED",
       "updatedAt": "2026-08-13T07:15:29Z",
       "status": "in-review",
       "statusLabel": "In Review",
@@ -515,7 +514,6 @@
         "08989b3b2d9d37ceeb190cce6eac7720d754153a",
         "92a86e46a707d8918e4bc62ebc1e121191a32c1c"
       ],
-      "reviewDecision": "COMMENTED",
       "updatedAt": "2026-07-15T13:24:34Z",
       "status": "merged",
       "statusLabel": "Merged",
@@ -549,7 +547,6 @@
         "6a0f8ba986815666da2117c9f7d1f9349764f8cf",
         "0459a24de21e769a66dbe7d8768e208d5cb647d6"
       ],
-      "reviewDecision": "APPROVED",
       "updatedAt": "2026-08-13T07:15:26Z",
       "status": "merged",
       "statusLabel": "Merged",
@@ -583,7 +580,6 @@
         "93913c8b94741b49a6b52ffd0c383a56b288d44a",
         "a440bd5ad3f69b245a7bbaefde27d5f205657eba"
       ],
-      "reviewDecision": "APPROVED",
       "updatedAt": "2026-07-29T10:01:00Z",
       "status": "merged",
       "statusLabel": "Merged",
@@ -617,7 +613,6 @@
         "68bbe6620db2d2cef97558f1c753ecbf82fe80db",
         "a563852ea0d1d09ce39c4a42f105555a4d072947"
       ],
-      "reviewDecision": "REVIEW_REQUESTED",
       "updatedAt": "2026-08-13T07:15:28Z",
       "status": "in-review",
       "statusLabel": "In Review",
@@ -650,7 +645,6 @@
         "11657b73ee7a52f8e3d95849b45c31e2ab6b372b",
         "ab7a1bcdb2ce620ee8c9e73a346bb528f96388ba"
       ],
-      "reviewDecision": "REVIEW_REQUESTED",
       "updatedAt": "2026-08-21T19:05:18Z",
       "status": "in-review",
       "statusLabel": "In Review",
@@ -682,7 +676,6 @@
       "commitShas": [
         "a5da7a83d74b806b42bf4107cf9b55ccf3c26e94"
       ],
-      "reviewDecision": "APPROVED",
       "updatedAt": "2026-08-20T19:24:28Z",
       "status": "approved",
       "statusLabel": "Approved",
@@ -718,7 +711,6 @@
         "bedcb988fe3e4431e707e0e618a35aa144afe673",
         "3b4a2d7d11a9b3eca3e96634819511cc0f560df6"
       ],
-      "reviewDecision": null,
       "updatedAt": "2026-08-16T19:29:12Z",
       "status": "open",
       "statusLabel": "Open",
@@ -751,7 +743,6 @@
         "b6ef04ead0dabc9182389baf0c40adfda1a179e6",
         "89fbb9b15955dcc744c528c1739d88cda1975dfb"
       ],
-      "reviewDecision": null,
       "updatedAt": "2026-08-18T09:40:40Z",
       "status": "open",
       "statusLabel": "Open",
@@ -787,7 +778,6 @@
         "2236f17e68a602c898bb3a28943d1714c7cd4200",
         "d1a061da369dcf151b913675eb730d105519152d"
       ],
-      "reviewDecision": null,
       "updatedAt": "2026-08-20T12:23:56Z",
       "status": "draft",
       "statusLabel": "Draft",

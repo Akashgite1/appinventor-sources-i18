@@ -91,7 +91,6 @@ export function deriveStatus(prData, reviews = []) {
       status: "merged",
       statusLabel: "Merged",
       statusTone: "purple",
-      reviewDecision,
     };
   }
 
@@ -101,7 +100,6 @@ export function deriveStatus(prData, reviews = []) {
       status: "draft",
       statusLabel: "Draft",
       statusTone: "gray",
-      reviewDecision,
     };
   }
 
@@ -111,7 +109,6 @@ export function deriveStatus(prData, reviews = []) {
       status: "closed",
       statusLabel: "Closed",
       statusTone: "gray",
-      reviewDecision,
     };
   }
 
@@ -121,7 +118,6 @@ export function deriveStatus(prData, reviews = []) {
       status: "changes-requested",
       statusLabel: "Changes Requested",
       statusTone: "amber",
-      reviewDecision,
     };
   }
 
@@ -131,7 +127,6 @@ export function deriveStatus(prData, reviews = []) {
       status: "approved",
       statusLabel: "Approved",
       statusTone: "green",
-      reviewDecision,
     };
   }
 
@@ -141,7 +136,6 @@ export function deriveStatus(prData, reviews = []) {
       status: "in-review",
       statusLabel: "In Review",
       statusTone: "blue",
-      reviewDecision,
     };
   }
 
@@ -150,7 +144,6 @@ export function deriveStatus(prData, reviews = []) {
     status: "open",
     statusLabel: "Open",
     statusTone: "teal",
-    reviewDecision: null,
   };
 }
 
@@ -233,7 +226,7 @@ export function aggregateGithubData(prRawResults, configData) {
     }
 
     // Compute derived PR status
-    const { status, statusLabel, statusTone, reviewDecision } = deriveStatus(prData, reviews);
+    const { status, statusLabel, statusTone } = deriveStatus(prData, reviews);
 
     pullRequestsSnapshot.push({
       id: config.id,
@@ -252,7 +245,6 @@ export function aggregateGithubData(prRawResults, configData) {
       deletions: prData.deletions ?? 0,
       changedFilesCount: prData.changed_files ?? files.length,
       commitShas: commits.map((c) => c.sha).filter(Boolean),
-      reviewDecision,
       updatedAt: prData.updated_at || new Date().toISOString(),
       status,
       statusLabel,
@@ -262,6 +254,7 @@ export function aggregateGithubData(prRawResults, configData) {
       order: config.order ?? 0,
     });
   }
+
 
   // Sort PR snapshots deterministically by order
   pullRequestsSnapshot.sort((a, b) => a.order - b.order);

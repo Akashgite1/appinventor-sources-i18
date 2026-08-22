@@ -149,7 +149,6 @@ describe("GitHub Data Aggregator & Hardening Tests", () => {
     ];
     const statusA = deriveStatus({ state: "open" }, reviewsA);
     assert.equal(statusA.status, "approved");
-    assert.equal(statusA.reviewDecision, "APPROVED");
 
     // Reviewer 1 approved, but later requested changes
     const reviewsB = [
@@ -158,7 +157,6 @@ describe("GitHub Data Aggregator & Hardening Tests", () => {
     ];
     const statusB = deriveStatus({ state: "open" }, reviewsB);
     assert.equal(statusB.status, "changes-requested");
-    assert.equal(statusB.reviewDecision, "CHANGES_REQUESTED");
 
     // Reviewer 1 approved, but Reviewer 2 requested changes
     const reviewsC = [
@@ -167,8 +165,8 @@ describe("GitHub Data Aggregator & Hardening Tests", () => {
     ];
     const statusC = deriveStatus({ state: "open" }, reviewsC);
     assert.equal(statusC.status, "changes-requested");
-    assert.equal(statusC.reviewDecision, "CHANGES_REQUESTED");
   });
+
 
   it("strictly adheres to objective lifecycle priority (merged > draft > closed > changes-requested > approved > in-review > open)", () => {
     // 1. Merged takes absolute precedence
@@ -268,9 +266,9 @@ describe("GitHub Data Aggregator & Hardening Tests", () => {
           deletions: 2,
           changedFilesCount: 1,
           commitShas: ["abc"],
-          reviewDecision: null,
           updatedAt: originalGeneratedAt,
           status: "open",
+
           statusLabel: "Open",
           statusTone: "teal",
           summary: "Summary",
