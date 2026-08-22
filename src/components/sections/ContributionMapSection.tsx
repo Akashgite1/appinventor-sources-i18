@@ -1,5 +1,11 @@
+import { useMemo } from "react";
 import type { ContributionLayer, FileChange } from "../../data/constants";
-import { contributionLayers, shortFileName } from "../../data/constants";
+import {
+  contributionLayers,
+  shortFileName,
+  snapshotTotals,
+  snapshotMeta,
+} from "../../data/constants";
 
 interface LayerStat {
   id: ContributionLayer;
@@ -30,38 +36,72 @@ export function ContributionMapSection({
 }: ContributionMapSectionProps) {
   const selectedLayer = contributionLayers.find((l) => l.id === activeLayer);
 
+  const formattedDate = useMemo(() => {
+    try {
+      const d = new Date(snapshotMeta.generatedAt);
+      return d.toLocaleString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        timeZoneName: "short",
+      });
+    } catch {
+      return snapshotMeta.generatedAt;
+    }
+  }, []);
+
   return (
     <section id="contribution-map" className="doc-section">
-      <h2>
-        <a href="#contribution-map">#</a> Contribution map
-      </h2>
+      <div className="section-header-wrap">
+        <h2>
+          <a href="#contribution-map">#</a> Contribution map
+        </h2>
+        <div className="sync-freshness-bar" aria-label="GitHub data sync status">
+          <span
+            className={`sync-status-dot ${snapshotMeta.stale ? "stale" : "live"}`}
+            aria-hidden="true"
+          />
+          <span className="sync-status-text">
+            {snapshotMeta.stale
+              ? "Using cached GitHub snapshot"
+              : `Last synchronized from GitHub: ${formattedDate}`}
+          </span>
+        </div>
+      </div>
+
       <p>
-        This interactive tree is generated from the public Git history across the complete i18n
-        branch stack. Select a branch to inspect every file in that functional layer and see whether
-        it was created or modified.
+        This interactive tree is generated from public GitHub data across the tracked i18n
+        pull-request stack. Select a branch to inspect every file in that functional layer and see
+        whether it was created or modified.
       </p>
 
       {/* Impact summary bar */}
       <div className="impact-summary" aria-label="Git contribution totals">
         <div>
           <span>Unique commits</span>
-          <strong>47</strong>
+          <strong>{snapshotTotals.uniqueCommits}</strong>
         </div>
         <div>
           <span>Files touched</span>
-          <strong>59</strong>
+          <strong>{snapshotTotals.filesTouched}</strong>
         </div>
         <div>
           <span>Lines added</span>
-          <strong className="metric-add">+8,679</strong>
+          <strong className="metric-add">
+            +{snapshotTotals.linesAdded.toLocaleString()}
+          </strong>
         </div>
         <div>
           <span>Lines deleted</span>
-          <strong className="metric-delete">−1,119</strong>
+          <strong className="metric-delete">
+            −{snapshotTotals.linesDeleted.toLocaleString()}
+          </strong>
         </div>
         <div>
           <span>New files</span>
-          <strong>27</strong>
+          <strong>{snapshotTotals.newFiles}</strong>
         </div>
       </div>
 
@@ -161,9 +201,8 @@ export function ContributionMapSection({
       </div>
 
       <p className="history-note">
-        Source: unique non-merge commits reachable from the public <code>feature-i18n-*</code>{" "}
-        branches, beginning with <code>c288841c</code>. Counts use Git <code>--numstat</code>;
-        generated build output and local configuration are excluded.
+        Source: generated from public GitHub REST data across the tracked PR stack (MIT App Inventor
+        #3976 + contributor PRs #2–#11).
       </p>
     </section>
   );

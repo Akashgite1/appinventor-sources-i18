@@ -6,8 +6,11 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "generate:github-data": "node scripts/generate-github-data.mjs",
+    "test": "node test/aggregation.test.mjs"
   },
+
   "dependencies": {
     "@vitejs/plugin-react": "6.0.2",
     "react": "19.2.6",

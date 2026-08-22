@@ -2,8 +2,11 @@ name: Deploy documentation to GitHub Pages
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
   workflow_dispatch:
+  schedule:
+    - cron: "17 */6 * * *"
 
 permissions:
   contents: read
@@ -31,7 +34,15 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Build
+      - name: Generate GitHub snapshot
+        run: npm run generate:github-data
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Run tests
+        run: npm test
+
+      - name: Build static site
         run: npm run build
 
       - name: Setup Pages
