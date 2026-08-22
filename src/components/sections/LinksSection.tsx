@@ -13,40 +13,48 @@ export function LinksSection() {
         rel="noreferrer"
       >
         <span>
-          <strong>Official GSoC project</strong>
-          <small>Program listing and project summary</small>
+          <strong>Official GSoC 2026 Project</strong>
+          <small>Google Summer of Code program listing and project deliverables summary</small>
         </span>
         <Icon name="external" />
       </a>
       <a
-        href="https://github.com/mit-cml/appinventor-sources/issues/3976"
+        href="https://github.com/mit-cml/appinventor-sources/pull/3976#commits-pushed-93913c8"
         target="_blank"
         rel="noreferrer"
       >
         <span>
-          <strong>Tracking issue #3976</strong>
-          <small>Internationalization support discussion</small>
+          <strong>Upstream Pull Request #3976 (mit-cml/appinventor-sources)</strong>
+          <small>Foundational MIT App Inventor core PR: feature-i18n-mvp-implementation</small>
         </span>
         <Icon name="external" />
       </a>
       <a
-        href={`${repository}/pulls?q=is%3Apr+author%3AAkashgite1+i18n`}
+        href={`${repository}/pulls`}
         target="_blank"
         rel="noreferrer"
       >
         <span>
-          <strong>Pull request work</strong>
-          <small>Public review history and stacked changes</small>
+          <strong>Contributor Pull Request Stack (Akashgite1)</strong>
+          <small>All 10 stacked review branches and public review history</small>
         </span>
         <Icon name="external" />
       </a>
       <a href={repository} target="_blank" rel="noreferrer">
         <span>
-          <strong>Source repository</strong>
-          <small>Branches, commits, and implementation source</small>
+          <strong>Contributor Source Repository</strong>
+          <small>Forked development repository, review branches, and commits</small>
+        </span>
+        <Icon name="external" />
+      </a>
+      <a href="https://github.com/mit-cml/appinventor-sources" target="_blank" rel="noreferrer">
+        <span>
+          <strong>Upstream MIT App Inventor Repository</strong>
+          <small>mit-cml/appinventor-sources master repository</small>
         </span>
         <Icon name="external" />
       </a>
     </section>
   );
 }
+

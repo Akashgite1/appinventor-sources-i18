@@ -25,48 +25,233 @@ export const navigation = [
   ]},
 ];
 
-export const milestones = [
+export interface PullRequestItem {
+  id: string;
+  number: number;
+  prUrl: string;
+  repo: "mit-cml/appinventor-sources" | "Akashgite1/appinventor-sources";
+  isUpstream?: boolean;
+  title: string;
+  branch: string;
+  baseBranch: string;
+  status: "merged" | "ready" | "in-review" | "upstream";
+  statusLabel: string;
+  statusTone: "purple" | "green" | "blue" | "amber";
+  summary: string;
+  highlights: string[];
+  order: number;
+}
+
+export const upstreamPr: PullRequestItem = {
+  id: "pr-3976",
+  number: 3976,
+  prUrl: "https://github.com/mit-cml/appinventor-sources/pull/3976#commits-pushed-93913c8",
+  repo: "mit-cml/appinventor-sources",
+  isUpstream: true,
+  title: "Add static Designer text translations for i18n",
+  branch: "feature-i18n-mvp-implementation",
+  baseBranch: "master",
+  status: "upstream",
+  statusLabel: "Upstream PR",
+  statusTone: "purple",
+  summary: "Foundational upstream pull request implementing static Designer text translations, core i18n data model, build pipeline asset extraction, and initial Android runtime support for App Inventor projects.",
+  highlights: [
+    "Core Young Android translation data model and key generator",
+    "Appengine translation panel integration with Designer components",
+    "Buildserver asset generator and manifest compiler",
+    "Android runtime translation loader and Form property application",
+  ],
+  order: 0,
+};
+
+export const pullRequests: PullRequestItem[] = [
+  upstreamPr,
   {
-    title: "Core i18n model",
-    branch: "feature-i18n-mvp-implementation",
-    summary: "Introduced translation state, key-based entries, and the first end-to-end project flow.",
+    id: "pr-2",
+    number: 2,
+    prUrl: "https://github.com/Akashgite1/appinventor-sources/pull/2",
+    repo: "Akashgite1/appinventor-sources",
+    title: "Add dynamic i18n translation keys and runtime lookup",
+    branch: "feature-i18n-dynamic-placeholders",
+    baseBranch: "feature-i18n-mvp-implementation",
+    status: "merged",
+    statusLabel: "Merged",
+    statusTone: "purple",
+    summary: "Introduced dynamic translation keys with positional placeholders ({0}, {1}), runtime text interpolation, and lookup functions across component blocks.",
+    highlights: [
+      "Dynamic translation key format with positional parameter syntax",
+      "Runtime placeholder substitution engine in components",
+      "Dynamic string lookup with graceful fallback to primary text",
+    ],
+    order: 1,
   },
   {
-    title: "Form-owned state",
-    branch: "feature-i18n-form-owned-translation-manager",
-    summary: "Separated translation management from the UI and aligned state with the active form lifecycle.",
-  },
-  {
-    title: "Companion preview",
+    id: "pr-3",
+    number: 3,
+    prUrl: "https://github.com/Akashgite1/appinventor-sources/pull/3",
+    repo: "Akashgite1/appinventor-sources",
+    title: "Add Companion i18n preview language selector",
     branch: "feature-i18n-companion-preview-language",
-    summary: "Added preview-language selection and guarded updates while Companion assets are transferring.",
+    baseBranch: "feature-i18n-mvp-implementation",
+    status: "merged",
+    statusLabel: "Merged",
+    statusTone: "purple",
+    summary: "Added live preview language switching directly within the Companion toolbar, allowing creators to test multilingual UI without rebuilding APKs.",
+    highlights: [
+      "Companion toolbar preview language dropdown selector",
+      "Guarded update flow preventing glitches during REPL asset transfers",
+      "Instant visual UI re-rendering for the active Form",
+    ],
+    order: 2,
   },
   {
-    title: "Per-language assets",
+    id: "pr-4",
+    number: 4,
+    prUrl: "https://github.com/Akashgite1/appinventor-sources/pull/4",
+    repo: "Akashgite1/appinventor-sources",
+    title: "Move i18n translation state to activity-owned manager",
+    branch: "feature-i18n-form-owned-translation-manager",
+    baseBranch: "feature-i18n-mvp-implementation",
+    status: "merged",
+    statusLabel: "Merged",
+    statusTone: "purple",
+    summary: "Decoupled translation state from individual Form instances into an activity-owned manager, ensuring stable lifecycle state and cross-screen coordination.",
+    highlights: [
+      "Activity-owned I18nTranslationManager instance",
+      "Decoupled Form rendering from translation storage",
+      "Persistent locale caching across multi-screen transitions",
+    ],
+    order: 3,
+  },
+  {
+    id: "pr-5",
+    number: 5,
+    prUrl: "https://github.com/Akashgite1/appinventor-sources/pull/5",
+    repo: "Akashgite1/appinventor-sources",
+    title: "Split i18n translations into per-language assets",
     branch: "feature-i18n-per-language-assets",
-    summary: "Compiled one manifest plus dedicated language payloads instead of shipping the editor source file.",
+    baseBranch: "feature-i18n-mvp-implementation",
+    status: "ready",
+    statusLabel: "Ready",
+    statusTone: "green",
+    summary: "Optimized packaging by compiling translations into one lightweight manifest plus isolated, compact per-language JSON asset payloads.",
+    highlights: [
+      "Modular manifest plus language asset partitioning",
+      "Significantly reduced APK and memory footprints",
+      "On-demand lazy loading of requested language payloads",
+    ],
+    order: 4,
   },
   {
-    title: "Project-file autosave",
+    id: "pr-7",
+    number: 7,
+    prUrl: "https://github.com/Akashgite1/appinventor-sources/pull/7",
+    repo: "Akashgite1/appinventor-sources",
+    title: "Store and autosave i18n translations in a project file",
     branch: "feature-i18n-translation-autosave",
-    summary: "Moved source translations to a project file and reused the existing FileEditor autosave lifecycle.",
+    baseBranch: "feature-i18n-per-language-assets",
+    status: "ready",
+    statusLabel: "Ready",
+    statusTone: "green",
+    summary: "Migrated translation source persistence from project settings properties to a dedicated translations.json project file hooked into FileEditor autosave.",
+    highlights: [
+      "Dedicated translations.json file node in project structure",
+      "Integration with FileEditor dirty-tracking and autosave timers",
+      "Eliminated custom save RPCs in favor of standard project persistence",
+    ],
+    order: 5,
   },
   {
-    title: "Translation workspace",
+    id: "pr-8",
+    number: 8,
+    prUrl: "https://github.com/Akashgite1/appinventor-sources/pull/8",
+    repo: "Akashgite1/appinventor-sources",
+    title: "Hide shared sidebars in the translation editor",
+    branch: "feature-i18n-translation-ui-layout",
+    baseBranch: "feature-i18n-translation-autosave",
+    status: "in-review",
+    statusLabel: "Ready / In Review",
+    statusTone: "blue",
+    summary: "Customized workspace viewport by hiding Designer and Blocks sidebars and the Media panel when the Translation editor is active.",
+    highlights: [
+      "Distraction-free, dedicated full-viewport translation layout",
+      "Context-aware sidebar toggle on view switching",
+      "Clean visual transition between Designer, Blocks, and Translations",
+    ],
+    order: 6,
+  },
+  {
+    id: "pr-9",
+    number: 9,
+    prUrl: "https://github.com/Akashgite1/appinventor-sources/pull/9",
+    repo: "Akashgite1/appinventor-sources",
+    title: "Feature i18n translation workspace layout",
     branch: "feature-i18n-translation-workspace-layout",
-    summary: "Built a full-width workspace with language navigation, search, pagination, and dynamic entries.",
+    baseBranch: "feature-i18n-translation-ui-layout",
+    status: "in-review",
+    statusLabel: "In Review",
+    statusTone: "blue",
+    summary: "Implemented comprehensive translation workspace with language navigation sidebar, real-time search filtering, and pagination.",
+    highlights: [
+      "Language navigation sidebar with translation completion statistics",
+      "Real-time key and string search filter with highlighting",
+      "Paginated entry table handling large projects smoothly",
+    ],
+    order: 7,
   },
   {
-    title: "Language setup",
+    id: "pr-10",
+    number: 10,
+    prUrl: "https://github.com/Akashgite1/appinventor-sources/pull/10",
+    repo: "Akashgite1/appinventor-sources",
+    title: "Add translation language setup flow",
     branch: "feature-i18n-translation-language-setup",
-    summary: "Added language configuration and canonical language-tag handling.",
+    baseBranch: "feature-i18n-translation-workspace-layout",
+    status: "in-review",
+    statusLabel: "In Review",
+    statusTone: "blue",
+    summary: "Built interactive language configuration modal with catalog selection, custom language tags, and canonical BCP-47 validation.",
+    highlights: [
+      "Searchable language catalog modal with predefined languages",
+      "Custom BCP-47 tag validation (script, region, and numeric forms)",
+      "Primary vs target language designation and fallback rules",
+    ],
+    order: 8,
   },
   {
-    title: "iOS runtime",
+    id: "pr-11",
+    number: 11,
+    prUrl: "https://github.com/Akashgite1/appinventor-sources/pull/11",
+    repo: "Akashgite1/appinventor-sources",
+    title: "Add iOS runtime support for app translations",
     branch: "feature-i18n-ios-runtime",
-    summary: "Added iOS packaging, loading, formatting, pre-initialize application, dynamic APIs, and Companion preview support.",
+    baseBranch: "feature-i18n-translation-language-setup",
+    status: "in-review",
+    statusLabel: "In Review",
+    statusTone: "blue",
+    summary: "Complete Swift runtime implementation matching Android parity: asset loading, locale fallback, pre-initialize application, dynamic APIs, and iOS Companion preview.",
+    highlights: [
+      "Swift I18nTranslationManager and I18nFormatter implementation",
+      "Buildserver iOS asset extraction task (GenerateI18nTranslationAssets)",
+      "Comprehensive Swift XCTest unit test suite",
+      "iOS Companion live preview language switching support",
+    ],
+    order: 9,
   },
 ];
+
+// Alias for backward compatibility
+export const milestones = pullRequests.map((pr) => ({
+  title: pr.title,
+  branch: pr.branch,
+  summary: pr.summary,
+  prUrl: pr.prUrl,
+  number: pr.number,
+  status: pr.status,
+  statusLabel: pr.statusLabel,
+  statusTone: pr.statusTone,
+}));
+
 
 export const checks = [
   ["Full repository suite", "ant tests", "Passed", "7m 00s on final storage revision"],

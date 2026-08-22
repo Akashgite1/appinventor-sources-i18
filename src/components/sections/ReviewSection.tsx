@@ -14,13 +14,13 @@ export function ReviewSection() {
       </p>
       <div className="commit-card">
         <div>
-          <Icon name="branch" />
+          <Icon name="pr" />
           <div>
-            <strong>Store i18n translations in a project file</strong>
-            <code>ab7a1bcdb</code>
+            <strong>Store and autosave i18n translations in a project file</strong>
+            <code>PR #7 · feature-i18n-translation-autosave</code>
           </div>
-          <a href={`${repository}/commit/ab7a1bcdb`} target="_blank" rel="noreferrer">
-            View commit <Icon name="external" />
+          <a href="https://github.com/Akashgite1/appinventor-sources/pull/7" target="_blank" rel="noreferrer">
+            View PR #7 <Icon name="external" />
           </a>
         </div>
         <ul>
