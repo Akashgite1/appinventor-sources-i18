@@ -26,7 +26,7 @@
 
 /* ── Base resets ── */
 * { box-sizing: border-box; }
-html { scroll-behavior: smooth; scroll-padding-top: 88px; }
+html { scroll-behavior: smooth; scroll-padding-top: calc(var(--topbar) + 28px); }
 body {
   margin: 0;
   background: var(--bg);
@@ -46,7 +46,7 @@ code { padding: 0.12rem 0.36rem; border-radius: 5px; background: rgba(110,118,12
 /* ── Topbar ── */
 .topbar {
   position: fixed;
-  z-index: 20;
+  z-index: 100;
   inset: 0 0 auto;
   height: var(--topbar);
   display: grid;
@@ -54,10 +54,11 @@ code { padding: 0.12rem 0.36rem; border-radius: 5px; background: rgba(110,118,12
   align-items: center;
   gap: 24px;
   padding: 0 24px;
-  background: rgba(13,17,23,.92);
+  background: var(--bg);
   border-bottom: 1px solid var(--border);
-  backdrop-filter: blur(16px);
+  box-shadow: 0 2px 8px rgba(0,0,0,.45);
 }
+
 .brand { display: flex; align-items: center; gap: 10px; font-size: 15px; white-space: nowrap; }
 .brand-mark {
   display: grid;
@@ -169,13 +170,14 @@ code { padding: 0.12rem 0.36rem; border-radius: 5px; background: rgba(110,118,12
 .content {
   width: min(100% - var(--sidebar), 1100px);
   margin-left: var(--sidebar);
-  padding: calc(var(--topbar) + 28px) 56px 48px;
+  padding: calc(var(--topbar) + 36px) 56px 48px;
 }
 .breadcrumbs { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 44px; color: var(--muted); font-size: 13px; }
 .breadcrumbs a { color: var(--link); }
 .breadcrumbs strong { color: var(--text); }
-.doc-section { padding: 12px 0 64px; border-bottom: 1px solid var(--border-soft); }
+.doc-section { padding: 12px 0 64px; border-bottom: 1px solid var(--border-soft); scroll-margin-top: calc(var(--topbar) + 24px); }
 .doc-section + .doc-section { padding-top: 64px; }
+
 .doc-section h2 { margin: 0 0 18px; font-size: 29px; line-height: 1.25; letter-spacing: -.025em; }
 .doc-section h2 a { margin-left: -24px; padding-right: 8px; color: #484f58; font-weight: 400; opacity: 0; transition: opacity .15s; }
 .doc-section h3 { margin: 34px 0 12px; font-size: 19px; }

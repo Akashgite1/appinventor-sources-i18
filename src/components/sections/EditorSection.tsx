@@ -229,17 +229,19 @@ export function EditorSection() {
 
       <h3>Preview and build</h3>
       <p>
-        Return to the Designer to use the translation preview-language selector with a connected
-        Companion. This allows configured translations to be reapplied while testing the project.
+        Return to the Designer and, while a Companion is connected, choose a language from the i18n
+        preview selector. The selected language and current translation data are sent to the
+        Companion and reapplied for testing.
       </p>
       <p>
         When the project is ready, use the normal Android or iOS build workflow. The buildserver
-        reads the shared project translation source and generates the runtime assets required by
-        the selected platform.
+        reads the shared translation source, generates the manifest and language assets, and passes
+        them to the platform-specific packaging pipeline.
       </p>
       <p>
-        At runtime, the application reads the device language and attempts to load the corresponding
-        available translation. If a translated value is unavailable, it falls back to the base text.
+        At runtime, the platform loader derives the language from the device locale. It tries the
+        exact locale first and then a language-only match when available. If an entry has no
+        translation, the application uses its base text.
       </p>
       <p>The same editable translation source is used for both Android and iOS builds.</p>
 
@@ -247,7 +249,9 @@ export function EditorSection() {
       <ul className="check-list">
         <li>
           <Icon name="check" />
-          <span>Eligible Designer text is rediscovered when forms change.</span>
+          <span>
+            Eligible translatable Designer properties are rediscovered when Designer content changes.
+          </span>
         </li>
         <li>
           <Icon name="check" />
