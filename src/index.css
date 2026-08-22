@@ -195,6 +195,10 @@ code { padding: 0.12rem 0.36rem; border-radius: 5px; background: rgba(110,118,12
 .setup-step-card p:last-child { margin-bottom: 0; }
 .property-specs, .inner-steps { margin: 8px 0 12px; padding-left: 20px; color: #8b949e; font-size: 13px; }
 .property-specs li, .inner-steps li { margin: 4px 0; }
+.example-subheading { margin: 16px 0 8px; font-size: 14px; font-weight: 700; color: #79c0ff; }
+.compact-table { max-width: 480px; margin: 12px 0 16px; }
+.compact-table th, .compact-table td { padding: 8px 12px; }
+
 
 
 /* ── Hero ── */

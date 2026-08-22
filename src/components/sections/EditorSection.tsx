@@ -96,33 +96,133 @@ export function EditorSection() {
         </div>
 
         <div className="setup-step-card">
-          <h4>4. Add dynamic messages when needed</h4>
+          <h4>4. Add runtime-dependent messages</h4>
           <p>
-            Static translations represent eligible text discovered from Designer properties. Text
-            created while the application is running can be defined under{" "}
-            <strong>Dynamic translations</strong>.
+            Dynamic translations are useful when the application knows the message it wants to
+            display, but part of that message is only available while the application is running.
+            Runtime values may come from user input, application state, calculated results, sensor
+            readings, or data returned by another component.
           </p>
-          <p>To create a dynamic translation:</p>
+          <p>
+            The Translation editor translates the message template. Named placeholders mark where
+            runtime values will be inserted. The runtime values themselves are preserved rather than
+            automatically translated.
+          </p>
+
+          <h5 className="example-subheading">Example: display a personalized Notifier message</h5>
+          <p>
+            Suppose an application asks the user to enter their name in <code>TextBox1</code> and then
+            displays a welcome message using <code>Notifier1</code>.
+          </p>
+          <p>Create the following dynamic translation:</p>
+          <ul className="property-specs">
+            <li>
+              <strong>Key:</strong> <code>welcome_message</code>
+            </li>
+            <li>
+              <strong>Base text:</strong> <code>Hello &#123;name&#125;!</code>
+            </li>
+            <li>
+              <strong>Placeholder:</strong> <code>name</code>
+            </li>
+          </ul>
+
+          <p>Add translations for the configured languages:</p>
+          <div className="table-wrap compact-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>Language</th>
+                  <th>Message template</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>English</td>
+                  <td>
+                    <code>Hello &#123;name&#125;!</code>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Hindi</td>
+                  <td>
+                    <code>नमस्ते &#123;name&#125;!</code>
+                  </td>
+                </tr>
+                <tr>
+                  <td>French</td>
+                  <td>
+                    <code>Bonjour &#123;name&#125; !</code>
+                  </td>
+                </tr>
+                <tr>
+                  <td>German</td>
+                  <td>
+                    <code>Hallo &#123;name&#125;!</code>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <p>To create this entry:</p>
           <ol className="inner-steps">
             <li>
-              Enter a stable key, such as <code>welcome_message</code>.
+              Open <strong>Dynamic translations</strong>.
             </li>
             <li>
-              Enter its base text, such as <code>Hello &#123;name&#125;</code>.
+              Enter <code>welcome_message</code> as the key.
             </li>
             <li>
-              List named placeholders as comma-separated values, such as <code>name</code>.
+              Enter <code>Hello &#123;name&#125;!</code> as the base text.
+            </li>
+            <li>
+              Enter <code>name</code> in the placeholders field.
             </li>
             <li>
               Select <strong>Add Dynamic Key</strong>.
             </li>
-            <li>Enter the translated value for each configured target language.</li>
+            <li>Enter the translated template for each configured target language.</li>
           </ol>
+
           <p>
-            Use the Screen component’s <code>Translate</code> function to look up a message without
-            placeholders. Use <code>TranslateWithValues</code> with a dictionary to replace named
-            placeholders. Named placeholders allow each language to arrange values in the order
-            required by its grammar.
+            When the user enters <code>Akash</code> in <code>TextBox1</code>, create a dictionary
+            that maps <code>name</code> to <code>TextBox1.Text</code>. Pass that dictionary and the{" "}
+            <code>welcome_message</code> key to the Screen component’s{" "}
+            <code>TranslateWithValues</code> function.
+          </p>
+          <p>
+            The returned result can then be passed to <code>Notifier1.ShowAlert</code>.
+          </p>
+          <p>For example:</p>
+          <ul className="property-specs">
+            <li>
+              English produces <code>Hello Akash!</code>
+            </li>
+            <li>
+              Hindi produces <code>नमस्ते Akash!</code>
+            </li>
+            <li>
+              French produces <code>Bonjour Akash !</code>
+            </li>
+            <li>
+              German produces <code>Hallo Akash!</code>
+            </li>
+          </ul>
+
+          <p>
+            The message template changes according to the active application language, while{" "}
+            <code>Akash</code> comes from the user’s current input.
+          </p>
+          <p>
+            Use the Screen component’s <code>Translate</code> function when a dynamic message does
+            not contain placeholders. Use <code>TranslateWithValues</code> when the message
+            contains values that must be supplied while the application is running.
+          </p>
+          <p>
+            Other possible uses include displaying an item count, a player’s score, a network error
+            containing a resource name, an order status, or any message whose values depend on
+            application logic.
           </p>
         </div>
       </div>
