@@ -520,9 +520,13 @@ code { padding: 0.12rem 0.36rem; border-radius: 5px; background: rgba(110,118,12
   border-radius: 50%;
   margin-right: 4px;
 }
-.legend-dot.merged { background: #d2a8ff; }
-.legend-dot.ready { background: #7ee787; }
-.legend-dot.in-review { background: #79c0ff; }
+.legend-dot.status-merged, .legend-dot.merged { background: #d2a8ff; }
+.legend-dot.status-approved, .legend-dot.ready { background: #7ee787; }
+.legend-dot.status-in-review, .legend-dot.in-review { background: #79c0ff; }
+.legend-dot.status-changes-requested { background: #e3b341; }
+.legend-dot.status-open { background: #56d4dd; }
+.legend-dot.status-draft { background: #8b949e; }
+.legend-dot.status-closed { background: #6e7681; }
 
 .stack-tree-flow {
   display: flex;
@@ -552,26 +556,47 @@ code { padding: 0.12rem 0.36rem; border-radius: 5px; background: rgba(110,118,12
   border: 1px solid var(--border);
   background: var(--bg);
 }
-.stack-dot.merged {
+.stack-dot.status-merged, .stack-dot.merged {
   color: #d2a8ff;
   background: rgba(163, 113, 247, 0.18);
   border-color: rgba(163, 113, 247, 0.5);
 }
-.stack-dot.ready {
+.stack-dot.status-approved, .stack-dot.ready {
   color: #7ee787;
   background: rgba(46, 160, 67, 0.18);
   border-color: rgba(63, 185, 80, 0.5);
 }
-.stack-dot.in-review {
+.stack-dot.status-in-review, .stack-dot.in-review {
   color: #79c0ff;
   background: rgba(56, 139, 253, 0.18);
   border-color: rgba(56, 139, 253, 0.5);
+}
+.stack-dot.status-changes-requested {
+  color: #e3b341;
+  background: rgba(227, 179, 65, 0.18);
+  border-color: rgba(227, 179, 65, 0.5);
+}
+.stack-dot.status-open {
+  color: #56d4dd;
+  background: rgba(86, 212, 221, 0.18);
+  border-color: rgba(86, 212, 221, 0.5);
+}
+.stack-dot.status-draft, .stack-dot.status-closed {
+  color: #8b949e;
+  background: rgba(139, 148, 158, 0.18);
+  border-color: rgba(139, 148, 158, 0.5);
 }
 .stack-dot.upstream {
   color: #fff;
   background: linear-gradient(135deg, var(--purple), #6e40c9);
   border-color: #a371f7;
 }
+.upstream-status-badges {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .status-bullet {
   width: 8px;
   height: 8px;

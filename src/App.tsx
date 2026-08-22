@@ -7,8 +7,8 @@ import {
   navigation,
   fileChanges,
   contributionLayers,
-  getContributionLayer,
   type ContributionLayer,
+  repository,
 } from "./data/constants";
 
 // Layout
@@ -24,14 +24,10 @@ import { ProjectFormatSection } from "./components/sections/ProjectFormatSection
 import { EditorSection } from "./components/sections/EditorSection";
 import { BuildPipelineSection } from "./components/sections/BuildPipelineSection";
 import { ContributionMapSection } from "./components/sections/ContributionMapSection";
-
 import { TestingSection } from "./components/sections/TestingSection";
 import { ContributorGuideSection } from "./components/sections/ContributorGuideSection";
-
 import { FutureWorkSection } from "./components/sections/FutureWorkSection";
 import { LinksSection } from "./components/sections/LinksSection";
-
-import { repository } from "./data/constants";
 
 export default function Home() {
   const [query, setQuery] = useState("");
@@ -47,28 +43,23 @@ export default function Home() {
       .slice(0, 6);
   }, [query]);
 
-  // Layer stats for the contribution tree
-  const layerStats = useMemo(
-    () =>
-      contributionLayers.map((layer) => {
-        const files = fileChanges.filter(([path]) => getContributionLayer(path) === layer.id);
-        return {
-          ...layer,
-          files,
-          additions: files.reduce((sum, [, additions]) => sum + additions, 0),
-          deletions: files.reduce((sum, [, , deletions]) => sum + deletions, 0),
-        };
-      }),
-    [],
+  // Consume pre-computed layer statistics directly from snapshot
+  const layerStats = contributionLayers;
+
+  const visibleChanges = useMemo(() => {
+    if (activeLayer === "all") return fileChanges;
+    const selected = contributionLayers.find((layer) => layer.id === activeLayer);
+    return selected ? selected.files : [];
+  }, [activeLayer]);
+
+  const visibleAdditions = useMemo(
+    () => visibleChanges.reduce((sum, [, additions]) => sum + additions, 0),
+    [visibleChanges]
   );
-
-  const visibleChanges =
-    activeLayer === "all"
-      ? fileChanges
-      : fileChanges.filter(([path]) => getContributionLayer(path) === activeLayer);
-
-  const visibleAdditions = visibleChanges.reduce((sum, [, additions]) => sum + additions, 0);
-  const visibleDeletions = visibleChanges.reduce((sum, [, , deletions]) => sum + deletions, 0);
+  const visibleDeletions = useMemo(
+    () => visibleChanges.reduce((sum, [, , deletions]) => sum + deletions, 0),
+    [visibleChanges]
+  );
 
   return (
     <div className="site-shell">
@@ -92,7 +83,6 @@ export default function Home() {
         <EditorSection />
         <BuildPipelineSection />
         <ContributionMapSection
-
           activeLayer={activeLayer}
           setActiveLayer={setActiveLayer}
           layerStats={layerStats}
@@ -102,14 +92,8 @@ export default function Home() {
         />
         <TestingSection />
         <ContributorGuideSection />
-
         <FutureWorkSection />
         <LinksSection />
-
-        <footer>
-          <p>Built as the final work product and technical handoff for Google Summer of Code 2026.</p>
-          <p>MIT App Inventor · Akash Gite · Mentor: Evan Patton</p>
-        </footer>
       </main>
     </div>
   );

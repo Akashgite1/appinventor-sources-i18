@@ -202,8 +202,9 @@ export function ContributionMapSection({
 
       <p className="history-note">
         Source: generated from public GitHub REST data across the tracked PR stack (MIT App Inventor
-        #3976 + contributor PRs #2–#11).
+        #3976 + contributor PRs #2, #3, #4, #5, and #7–#11).
       </p>
+
     </section>
   );
 }

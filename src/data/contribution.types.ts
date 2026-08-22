@@ -1,20 +1,34 @@
-export type ContributionLayerId = "editor" | "build" | "android" | "ios" | "tests" | "integration" | "unclassified";
+export type ContributionLayerId =
+  | "editor"
+  | "build"
+  | "android"
+  | "ios"
+  | "tests"
+  | "integration"
+  | "unclassified";
 
-export type DerivedStatus = "merged" | "draft" | "closed" | "changes-requested" | "approved" | "in-review" | "open" | "ready" | "upstream";
+export type DerivedStatus =
+  | "merged"
+  | "draft"
+  | "closed"
+  | "changes-requested"
+  | "approved"
+  | "in-review"
+  | "open";
 
 export type StatusTone = "purple" | "green" | "blue" | "amber" | "teal" | "gray";
 
 export interface TrackedPrConfig {
   id: string;
   number: number;
-  repo: "mit-cml/appinventor-sources" | "Akashgite1/appinventor-sources" | string;
+  repo: string;
   isUpstream?: boolean;
   title: string;
   summary: string;
   highlights: string[];
   order: number;
   layer?: ContributionLayerId;
-  displayStatusOverride?: DerivedStatus;
+  stage?: string;
   fallbackBranch?: string;
   fallbackBaseBranch?: string;
 }
@@ -48,21 +62,13 @@ export interface PullRequestSnapshot {
   status: DerivedStatus;
   statusLabel: string;
   statusTone: StatusTone;
+  stage?: string;
   summary: string;
   highlights: string[];
   order: number;
 }
 
 export type FileChangeKind = "new" | "modified";
-
-export interface FileChangeRecord {
-  path: string;
-  additions: number;
-  deletions: number;
-  kind: FileChangeKind;
-  previousFilename?: string;
-  layer: ContributionLayerId;
-}
 
 export type FileChangeTuple = [
   path: string,
@@ -93,6 +99,7 @@ export interface ContributionTotalsSnapshot {
 export interface ContributionSnapshot {
   schemaVersion: number;
   generatedAt: string;
+  lastAttemptAt?: string;
   source: "github" | "fallback";
   stale: boolean;
   totals: ContributionTotalsSnapshot;

@@ -1,30 +1,74 @@
 import { useState, useMemo } from "react";
 import { Icon } from "../ui/Icon";
 import { Status } from "../ui/Status";
-import { pullRequests, upstreamPr, repository, type PullRequestItem } from "../../data/constants";
+import { pullRequests, upstreamPr, repository } from "../../data/constants";
+import type { DerivedStatus } from "../../data/contribution.types";
 
-type FilterStatus = "all" | "upstream" | "merged" | "ready" | "in-review";
+type FilterId = "all" | "upstream" | "active" | DerivedStatus;
 type ViewMode = "cards" | "stack";
 
 export function DeliverablesSection() {
-  const [filter, setFilter] = useState<FilterStatus>("all");
+  const [filter, setFilter] = useState<FilterId>("all");
   const [viewMode, setViewMode] = useState<ViewMode>("cards");
   const [selectedPrId, setSelectedPrId] = useState<string | null>(null);
 
+  const activeStatuses = useMemo(
+    () => new Set<DerivedStatus>(["draft", "open", "in-review", "changes-requested", "approved"]),
+    []
+  );
+
   const filteredPrs = useMemo(() => {
     if (filter === "all") return pullRequests;
+    if (filter === "upstream") return pullRequests.filter((pr) => pr.isUpstream);
+    if (filter === "active") return pullRequests.filter((pr) => activeStatuses.has(pr.status));
     return pullRequests.filter((pr) => pr.status === filter);
-  }, [filter]);
+  }, [filter, activeStatuses]);
 
-  const counts = useMemo(() => {
-    return {
+  // Compute status counts dynamically from the snapshot
+  const statusCounts = useMemo(() => {
+    const counts: Record<string, number> = {
       all: pullRequests.length,
-      upstream: pullRequests.filter((p) => p.status === "upstream").length,
-      merged: pullRequests.filter((p) => p.status === "merged").length,
-      ready: pullRequests.filter((p) => p.status === "ready").length,
-      inReview: pullRequests.filter((p) => p.status === "in-review").length,
+      upstream: pullRequests.filter((p) => p.isUpstream).length,
+      active: pullRequests.filter((p) => activeStatuses.has(p.status)).length,
     };
-  }, []);
+    for (const pr of pullRequests) {
+      counts[pr.status] = (counts[pr.status] || 0) + 1;
+    }
+    return counts;
+  }, [activeStatuses]);
+
+  // Extract unique statuses present in the snapshot
+  const availableStatuses = useMemo(() => {
+    const statusMap = new Map<DerivedStatus, { label: string; tone: string; order: number }>();
+    const orderMap: Record<DerivedStatus, number> = {
+      merged: 1,
+      approved: 2,
+      "in-review": 3,
+      "changes-requested": 4,
+      open: 5,
+      draft: 6,
+      closed: 7,
+    };
+
+    for (const pr of pullRequests) {
+      if (!statusMap.has(pr.status)) {
+        statusMap.set(pr.status, {
+          label: pr.statusLabel,
+          tone: pr.statusTone,
+          order: orderMap[pr.status] ?? 99,
+        });
+      }
+    }
+
+    return Array.from(statusMap.entries())
+      .sort((a, b) => a[1].order - b[1].order)
+      .map(([status, meta]) => ({
+        status,
+        label: meta.label,
+        tone: meta.tone,
+        count: statusCounts[status] || 0,
+      }));
+  }, [statusCounts]);
 
   return (
     <section id="deliverables" className="doc-section deliverables-section">
@@ -46,7 +90,10 @@ export function DeliverablesSection() {
             <span className="org-icon">🏛️</span>
             <strong>mit-cml / appinventor-sources</strong>
           </div>
-          <Status tone="purple">Upstream PR #{upstreamPr.number}</Status>
+          <div className="upstream-status-badges">
+            <span className="upstream-pill">Upstream PR</span>
+            <Status tone={upstreamPr.statusTone}>{upstreamPr.statusLabel}</Status>
+          </div>
         </div>
         <div className="upstream-content">
           <div className="upstream-text">
@@ -85,36 +132,27 @@ export function DeliverablesSection() {
             className={`filter-tab ${filter === "all" ? "active" : ""}`}
             onClick={() => setFilter("all")}
           >
-            All PRs <span className="count-pill">{counts.all}</span>
+            All PRs <span className="count-pill">{statusCounts.all}</span>
           </button>
-          <button
-            type="button"
-            className={`filter-tab ${filter === "upstream" ? "active" : ""}`}
-            onClick={() => setFilter("upstream")}
-          >
-            Upstream <span className="count-pill">{counts.upstream}</span>
-          </button>
-          <button
-            type="button"
-            className={`filter-tab ${filter === "merged" ? "active" : ""}`}
-            onClick={() => setFilter("merged")}
-          >
-            Merged <span className="count-pill">{counts.merged}</span>
-          </button>
-          <button
-            type="button"
-            className={`filter-tab ${filter === "ready" ? "active" : ""}`}
-            onClick={() => setFilter("ready")}
-          >
-            Ready <span className="count-pill">{counts.ready}</span>
-          </button>
-          <button
-            type="button"
-            className={`filter-tab ${filter === "in-review" ? "active" : ""}`}
-            onClick={() => setFilter("in-review")}
-          >
-            In Review <span className="count-pill">{counts.inReview}</span>
-          </button>
+          {statusCounts.upstream > 0 && (
+            <button
+              type="button"
+              className={`filter-tab ${filter === "upstream" ? "active" : ""}`}
+              onClick={() => setFilter("upstream")}
+            >
+              Upstream <span className="count-pill">{statusCounts.upstream}</span>
+            </button>
+          )}
+          {availableStatuses.map((item) => (
+            <button
+              key={item.status}
+              type="button"
+              className={`filter-tab ${filter === item.status ? "active" : ""}`}
+              onClick={() => setFilter(item.status)}
+            >
+              {item.label} <span className="count-pill">{item.count}</span>
+            </button>
+          ))}
         </div>
 
         <div className="pr-view-toggle">
@@ -146,9 +184,11 @@ export function DeliverablesSection() {
               <h4>Linear Stacked Pull Request Workflow</h4>
             </div>
             <span className="stack-legend">
-              <span className="legend-dot merged" /> Merged
-              <span className="legend-dot ready" /> Ready
-              <span className="legend-dot in-review" /> In Review
+              {availableStatuses.map((item) => (
+                <span key={item.status} className="legend-item">
+                  <span className={`legend-dot status-${item.status}`} /> {item.label}
+                </span>
+              ))}
             </span>
           </div>
 
@@ -160,19 +200,17 @@ export function DeliverablesSection() {
               return (
                 <div
                   key={pr.id}
-                  className={`stack-node ${pr.status} ${isSelected ? "selected" : ""} ${isUpstream ? "is-upstream" : ""}`}
+                  className={`stack-node status-${pr.status} ${isSelected ? "selected" : ""} ${isUpstream ? "is-upstream" : ""}`}
                   onClick={() => setSelectedPrId(isSelected ? null : pr.id)}
                 >
                   <div className="stack-node-rail">
-                    <div className={`stack-dot ${pr.status}`}>
+                    <div className={`stack-dot status-${pr.status}`}>
                       {pr.status === "merged" ? (
                         <Icon name="merge" />
-                      ) : pr.status === "ready" ? (
+                      ) : pr.status === "approved" ? (
                         <Icon name="check" />
-                      ) : isUpstream ? (
-                        <Icon name="pr" />
                       ) : (
-                        <span className="status-bullet" />
+                        <Icon name="pr" />
                       )}
                     </div>
                     {index < pullRequests.length - 1 && <div className="stack-connector" />}
@@ -184,6 +222,7 @@ export function DeliverablesSection() {
                         <span className="pr-badge-number">
                           <Icon name="pr" /> #{pr.number}
                         </span>
+                        {pr.isUpstream && <span className="upstream-pill">Upstream MIT</span>}
                         <Status tone={pr.statusTone}>{pr.statusLabel}</Status>
                       </div>
                       <a
@@ -219,15 +258,18 @@ export function DeliverablesSection() {
       {viewMode === "cards" && (
         <div className="pr-cards-grid">
           {filteredPrs.map((pr) => (
-            <article key={pr.id} className={`pr-card status-${pr.status} ${pr.isUpstream ? "pr-card-upstream" : ""}`}>
+            <article
+              key={pr.id}
+              className={`pr-card status-${pr.status} ${pr.isUpstream ? "pr-card-upstream" : ""}`}
+            >
               <div className="pr-card-header">
                 <div className="pr-card-header-left">
                   <span className="pr-tag">
                     <Icon name={pr.status === "merged" ? "merge" : "pr"} />
                     <strong>PR #{pr.number}</strong>
                   </span>
-                  <Status tone={pr.statusTone}>{pr.statusLabel}</Status>
                   {pr.isUpstream && <span className="upstream-pill">Upstream MIT</span>}
+                  <Status tone={pr.statusTone}>{pr.statusLabel}</Status>
                 </div>
                 <div className="pr-card-order-badge">
                   {pr.order === 0 ? "Base MVP" : `Stack #${pr.order}`}

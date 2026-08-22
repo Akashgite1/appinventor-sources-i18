@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "generatedAt": "2026-08-22T20:41:11.647Z",
-  "source": "github",
-  "stale": false,
+  "source": "fallback",
+  "stale": true,
   "totals": {
     "uniqueCommits": 50,
     "filesTouched": 59,
@@ -1158,5 +1158,6 @@
       0,
       "modified"
     ]
-  ]
+  ],
+  "lastAttemptAt": "2026-08-22T21:08:03.663Z"
 }

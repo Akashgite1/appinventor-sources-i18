@@ -5,10 +5,6 @@ import type {
   ContributionLayerId,
 } from "./contribution.types";
 import rawSnapshot from "./contribution.snapshot.json";
-import {
-  contributionLayers as defaultLayers,
-  classifyFileLayer,
-} from "./contribution.config";
 
 export const repository = "https://github.com/Akashgite1/appinventor-sources";
 
@@ -48,7 +44,6 @@ export const navigation = [
 ];
 
 export const contributionSnapshot = rawSnapshot as unknown as ContributionSnapshot;
-
 
 export type PullRequestItem = PullRequestSnapshot;
 
@@ -91,18 +86,16 @@ export type FileChange = FileChangeTuple;
 
 export const fileChanges: FileChange[] = contributionSnapshot.fileChanges as FileChange[];
 
-export const contributionLayers = defaultLayers;
+// Consumed directly from pre-computed snapshot layers (no browser-side reclassification)
+export const contributionLayers = contributionSnapshot.layers;
 
 export const snapshotTotals = contributionSnapshot.totals;
 export const snapshotMeta = {
   generatedAt: contributionSnapshot.generatedAt,
+  lastAttemptAt: contributionSnapshot.lastAttemptAt,
   stale: contributionSnapshot.stale,
   source: contributionSnapshot.source,
 };
-
-export function getContributionLayer(path: string): ContributionLayer {
-  return classifyFileLayer(path);
-}
 
 export function shortFileName(path: string) {
   return path.slice(path.lastIndexOf("/") + 1);
