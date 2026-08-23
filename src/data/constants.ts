@@ -38,7 +38,7 @@ export const navigation = [
     items: [
       { id: "contributors", label: "Contributor guide" },
       { id: "future", label: "Future work" },
-      { id: "links", label: "Project links" },
+      { id: "acknowledgements", label: "Acknowledgements" },
     ],
   },
 ];

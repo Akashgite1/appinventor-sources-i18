@@ -27,7 +27,7 @@ import { ContributionMapSection } from "./components/sections/ContributionMapSec
 import { TestingSection } from "./components/sections/TestingSection";
 import { ContributorGuideSection } from "./components/sections/ContributorGuideSection";
 import { FutureWorkSection } from "./components/sections/FutureWorkSection";
-import { LinksSection } from "./components/sections/LinksSection";
+import { AcknowledgementsSection } from "./components/sections/AcknowledgementsSection";
 
 export default function Home() {
   const [query, setQuery] = useState("");
@@ -93,7 +93,7 @@ export default function Home() {
         <TestingSection />
         <ContributorGuideSection />
         <FutureWorkSection />
-        <LinksSection />
+        <AcknowledgementsSection />
       </main>
     </div>
   );
