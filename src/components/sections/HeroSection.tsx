@@ -12,9 +12,11 @@ export function HeroSection() {
       </div>
       <h1>Internationalization support for applications built with MIT App Inventor</h1>
       <p className="lead">
-        A project-level translation workflow spanning the Designer, Companion preview, Android
-        builds, and iOS builds—without requiring creators to maintain separate interfaces for each
-        platform.
+        MIT App Inventor creators previously lacked a structured way to manage translations, making
+        multilingual applications difficult to build and maintain. This project introduces a
+        project-level Translation editor for discovering user-facing text, configuring languages,
+        managing static and dynamic translations, and using one shared translation source for
+        Android and iOS builds.
       </p>
       <div className="hero-actions">
         <a className="button primary" href="#deliverables">
