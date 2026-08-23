@@ -30,7 +30,7 @@ export const navigation = [
     group: "Verification",
     items: [
       { id: "contribution-map", label: "Contribution map" },
-      { id: "testing", label: "Testing evidence" },
+      { id: "verification", label: "Verification" },
     ],
   },
   {
@@ -64,14 +64,53 @@ export const milestones = pullRequests.map((pr) => ({
   statusTone: pr.statusTone,
 }));
 
-export const checks = [
-  ["Full repository suite", "ant tests", "Passed", "7m 00s on final storage revision"],
-  ["Buildserver suite", "ant -f buildserver/build.xml tests", "Passed", "Includes iOS asset-generation tests"],
-  ["Project archive", "Fresh .aia export/import", "Passed", "translations.json persisted and reloaded"],
-  ["Android package", "APK archive inspection", "Passed", "Manifest + en/fr/hi/mr language assets"],
-  ["Legacy storage", "Project/settings inspection", "Passed", "No I18nTranslations settings property"],
-  ["iOS runtime", "Swift unit coverage", "Covered", "Loader, formatter, fallback, APIs, and preview behavior"],
+export interface VerificationCheck {
+  area: string;
+  verification: string;
+  result: "Passed" | "Covered";
+  tone?: "green" | "purple";
+  isCode?: boolean;
+}
+
+export const verificationChecks: VerificationCheck[] = [
+  {
+    area: "Automated regression tests",
+    verification: "ant tests",
+    result: "Passed",
+    tone: "green",
+    isCode: true,
+  },
+  {
+    area: "Project persistence",
+    verification: "Fresh .aia export, import, and translation reload",
+    result: "Passed",
+    tone: "green",
+    isCode: false,
+  },
+  {
+    area: "Android packaging",
+    verification: "APK inspection confirmed the generated manifest and per-language assets",
+    result: "Passed",
+    tone: "green",
+    isCode: false,
+  },
+  {
+    area: "iOS implementation",
+    verification:
+      "Buildserver tests and Swift unit coverage for loading, fallback, formatting, APIs, and preview behavior",
+    result: "Covered",
+    tone: "purple",
+    isCode: false,
+  },
 ];
+
+// Backwards compatibility alias
+export const checks = verificationChecks.map((item) => [
+  item.area,
+  item.verification,
+  item.result,
+  "",
+]);
 
 export const reviewChanges = [
   "Replaced project-settings storage with a dedicated translations.json project file.",

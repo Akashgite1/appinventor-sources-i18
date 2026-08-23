@@ -1,42 +1,45 @@
 import { Status } from "../ui/Status";
-import { checks } from "../../data/constants";
+import { verificationChecks } from "../../data/constants";
 
 export function TestingSection() {
   return (
-    <section id="testing" className="doc-section">
+    <section id="verification" className="doc-section">
+      <div id="testing" style={{ display: "none" }} aria-hidden="true" />
       <h2>
-        <a href="#testing">#</a> Testing evidence
+        <a href="#verification">#</a> Verification
       </h2>
       <p>
-        Verification combined automated suites with archive-level inspection and a fresh-project
-        persistence workflow.
+        The implementation was verified through automated tests and inspection of exported project
+        and application artifacts.
       </p>
+
       <div className="table-wrap">
         <table>
           <thead>
             <tr>
-              <th>Scope</th>
-              <th>Method</th>
-              <th>Result</th>
-              <th>Evidence</th>
+              <th style={{ width: "30%" }}>Area</th>
+              <th style={{ width: "55%" }}>Verification</th>
+              <th style={{ width: "15%" }}>Result</th>
             </tr>
           </thead>
           <tbody>
-            {checks.map(([scope, method, result, evidence]) => (
-              <tr key={scope}>
-                <td>{scope}</td>
+            {verificationChecks.map((item) => (
+              <tr key={item.area}>
                 <td>
-                  <code>{method}</code>
+                  <strong>{item.area}</strong>
                 </td>
                 <td>
-                  <Status>{result}</Status>
+                  {item.isCode ? <code>{item.verification}</code> : item.verification}
                 </td>
-                <td>{evidence}</td>
+                <td>
+                  <Status tone={item.tone || "green"}>{item.result}</Status>
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+
       <div className="proof">
         <div>
           <span className="terminal-dot red" />
@@ -50,11 +53,11 @@ export function TestingSection() {
 BUILD SUCCESSFUL
 Total time: 7 minutes 0 seconds`}</pre>
       </div>
+
       <p className="fine-print">
-        <strong>Scope note:</strong> Android was also verified through a freshly built APK and
-        archive inspection. iOS coverage described here consists of buildserver integration and Swift
-        unit tests; a fully signed iOS application build requires the macOS/Xcode signing
-        environment.
+        Android packaging was tested using a generated APK. iOS verification covers the implemented
+        buildserver and Swift units; a complete signed iOS application build requires the macOS/Xcode
+        build environment.
       </p>
     </section>
   );
