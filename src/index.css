@@ -304,6 +304,8 @@ code { padding: 0.12rem 0.36rem; border-radius: 5px; background: rgba(110,118,12
 .summary-grid div:last-child { border-right: 0; }
 .summary-grid span { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: .06em; }
 .summary-grid strong { font-size: 13px; }
+.summary-grid a.summary-link { color: inherit; text-decoration: none; display: flex; flex-direction: column; }
+.summary-grid a.summary-link:hover strong { color: var(--link); }
 
 /* ── Status badges ── */
 .status { display: inline-flex; align-items: center; width: max-content; padding: 2px 8px; border: 1px solid; border-radius: 999px; font-size: 11px; font-weight: 700; line-height: 1.5; white-space: nowrap; }

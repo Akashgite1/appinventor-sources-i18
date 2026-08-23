@@ -16,13 +16,19 @@ export function Sidebar() {
           </div>
         ))}
       </nav>
-      <div className="sidebar-note">
+      <a
+        className="sidebar-note"
+        href="https://github.com/Akashgite1"
+        target="_blank"
+        rel="noreferrer"
+        style={{ textDecoration: "none", color: "inherit" }}
+      >
         <span className="avatar">AG</span>
         <div>
           <strong>Akash Gite</strong>
           <span>GSoC contributor</span>
         </div>
-      </div>
+      </a>
     </aside>
   );
 }

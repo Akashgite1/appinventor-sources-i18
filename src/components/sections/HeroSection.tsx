@@ -34,17 +34,38 @@ export function HeroSection() {
       <div className="summary-grid">
         <div>
           <span>Organization</span>
-          <strong style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
-            <AppInventorLogo size={16} /> MIT App Inventor
-          </strong>
+          <a
+            href="https://github.com/mit-cml/appinventor-sources"
+            target="_blank"
+            rel="noreferrer"
+            className="summary-link"
+          >
+            <strong style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
+              <AppInventorLogo size={16} /> MIT App Inventor
+            </strong>
+          </a>
         </div>
         <div>
           <span>Contributor</span>
-          <strong>Akash Gite</strong>
+          <a
+            href="https://github.com/Akashgite1"
+            target="_blank"
+            rel="noreferrer"
+            className="summary-link"
+          >
+            <strong>Akash Gite</strong>
+          </a>
         </div>
         <div>
           <span>Mentor</span>
-          <strong>Evan Patton</strong>
+          <a
+            href="https://github.com/ewpatton"
+            target="_blank"
+            rel="noreferrer"
+            className="summary-link"
+          >
+            <strong>Evan Patton</strong>
+          </a>
         </div>
         <div>
           <span>Project size</span>

@@ -37,7 +37,16 @@ export function AcknowledgementsSection() {
             <div className="ack-block-header">
               <div className="mentor-avatar-badge evan-avatar">EP</div>
               <div className="mentor-info">
-                <h3>Evan Patton</h3>
+                <h3>
+                  <a
+                    href="https://github.com/ewpatton"
+                    target="_blank"
+                    rel="noreferrer"
+                    style={{ color: "inherit", textDecoration: "none" }}
+                  >
+                    Evan Patton
+                  </a>
+                </h3>
                 <span className="mentor-role-tag">Primary Mentor · MIT App Inventor Lead</span>
               </div>
             </div>
@@ -45,7 +54,15 @@ export function AcknowledgementsSection() {
             <div className="ack-block-body">
               <p>
                 I would first like to express my heartfelt gratitude to my mentor,{" "}
-                <strong>Evan Patton</strong>.
+                <a
+                  href="https://github.com/ewpatton"
+                  target="_blank"
+                  rel="noreferrer"
+                  style={{ color: "var(--link)", fontWeight: 700 }}
+                >
+                  Evan Patton
+                </a>
+                .
               </p>
               <p>
                 Whenever I was stuck, Evan patiently helped me find the right direction. He taught me
