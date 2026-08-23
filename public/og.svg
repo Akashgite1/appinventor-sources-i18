@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0d1117"/>
+      <stop offset="50%" stop-color="#161b22"/>
+      <stop offset="100%" stop-color="#090d13"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#a371f7"/>
+      <stop offset="100%" stop-color="#58a6ff"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect x="1" y="1" width="1198" height="628" fill="none" stroke="#30363d" stroke-width="2" rx="16"/>
+
+  <!-- Logo Group on the left -->
+  <g transform="translate(100, 140) scale(0.35)">
+    <!-- Left Purple Block -->
+    <polygon points="293,103 500,223 500,530 86,530 86,223" fill="#801A79"/>
+    <!-- Right Green Block -->
+    <polygon points="707,103 914,223 914,530 500,530 500,223" fill="#8CC63F"/>
+    
+    <!-- Left Wing -->
+    <path d="M300,530 C180,450 70,455 0,480 C90,430 220,430 330,490 Z" fill="#F58220"/>
+    <!-- Right Wing -->
+    <path d="M700,530 C820,450 930,455 1000,480 C910,430 780,430 670,490 Z" fill="#F58220"/>
+
+    <!-- Left Leg -->
+    <path d="M294,740 C215,800 185,820 185,820 C245,780 295,755 350,750 Z" fill="#F58220"/>
+    <!-- Right Leg -->
+    <path d="M706,740 C785,800 815,820 815,820 C755,780 705,755 650,750 Z" fill="#F58220"/>
+
+    <!-- Pointed Lower Abdomen -->
+    <polygon points="294,740 500,900 706,740" fill="#F58220"/>
+
+    <!-- Torso Base -->
+    <rect x="294" y="575" width="412" height="165" fill="#F58220"/>
+    <!-- Torso Stripes -->
+    <rect x="294" y="618" width="412" height="42" fill="#505050"/>
+    <rect x="294" y="698" width="412" height="42" fill="#505050"/>
+
+    <!-- Head Dome -->
+    <path d="M294,575 C294,461 386,369 500,369 C614,369 706,461 706,575 Z" fill="#FFFFFF"/>
+
+    <!-- Left Antenna -->
+    <polygon points="405,360 365,392 443,430 405,360" fill="#FFFFFF"/>
+    <polygon points="320,360 405,360 405,392 345,392 320,360" fill="#FFFFFF"/>
+
+    <!-- Right Antenna -->
+    <polygon points="595,360 635,392 557,430 595,360" fill="#FFFFFF"/>
+    <polygon points="680,360 595,360 595,392 655,392 680,360" fill="#FFFFFF"/>
+
+    <!-- Eyes -->
+    <circle cx="448" cy="515" r="21" fill="#505050"/>
+    <circle cx="552" cy="515" r="21" fill="#505050"/>
+  </g>
+
+  <!-- Content Group on the right -->
+  <g transform="translate(500, 180)">
+    <!-- Pill Badge -->
+    <rect x="0" y="0" width="220" height="36" rx="18" fill="rgba(163, 113, 247, 0.15)" stroke="rgba(163, 113, 247, 0.4)" stroke-width="1.5"/>
+    <text x="110" y="23" fill="#d2a8ff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="14" font-weight="700" text-anchor="middle" letter-spacing="1">GSOC 2026 PRODUCT</text>
+
+    <!-- Main Title -->
+    <text x="0" y="90" fill="#ffffff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="46" font-weight="800">MIT App Inventor <tspan fill="url(#accent)">i18n</tspan></text>
+    
+    <!-- Subtitle -->
+    <text x="0" y="145" fill="#8b949e" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="22" font-weight="400">Cross-Platform Internationalization Support</text>
+    <text x="0" y="180" fill="#8b949e" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="20" font-weight="400">Designer · Companion · Android · iOS</text>
+
+    <!-- Footer meta -->
+    <text x="0" y="260" fill="#c9d1d9" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="18" font-weight="600">Contributor: Akash Gite  •  Mentor: Evan Patton</text>
+  </g>
+</svg>

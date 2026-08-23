@@ -1,5 +1,6 @@
 import { Icon } from "../ui/Icon";
 import { Status } from "../ui/Status";
+import { AppInventorLogo } from "../ui/AppInventorLogo";
 import { repository } from "../../data/constants";
 
 export function HeroSection() {
@@ -31,7 +32,9 @@ export function HeroSection() {
       <div className="summary-grid">
         <div>
           <span>Organization</span>
-          <strong>MIT App Inventor</strong>
+          <strong style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
+            <AppInventorLogo size={16} /> MIT App Inventor
+          </strong>
         </div>
         <div>
           <span>Contributor</span>

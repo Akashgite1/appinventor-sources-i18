@@ -1,4 +1,5 @@
 import { Icon } from "../ui/Icon";
+import { AppInventorLogo } from "../ui/AppInventorLogo";
 import { navigation, repository } from "../../data/constants";
 
 interface TopbarProps {
@@ -12,7 +13,7 @@ export function Topbar({ query, setQuery, results }: TopbarProps) {
     <header className="topbar">
       <a className="brand" href="#overview" aria-label="Documentation home">
         <span className="brand-mark">
-          <Icon name="book" />
+          <AppInventorLogo size={24} />
         </span>
         <span>
           App Inventor <strong>i18n</strong>
