@@ -72,8 +72,8 @@ export function FutureWorkSection() {
         {futureWorkItems.map((item) => (
           <article key={item.id} className="future-card">
             <div className="future-card-header">
-              <Status tone={item.tone}>{item.status}</Status>
               <h3 className="future-card-title">{item.title}</h3>
+              <Status tone={item.tone}>{item.status}</Status>
             </div>
             <div className="future-card-body">
               {item.paragraphs.map((p, idx) => (
