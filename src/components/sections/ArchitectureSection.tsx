@@ -52,9 +52,9 @@ export function ArchitectureSection() {
 
       <h3>Shared contract, separate implementations</h3>
       <p>
-        Both platforms consume the same generated manifest and language-file contract. Asset
-        generation is shared in the buildserver, while packaging and runtime application are
-        implemented separately for Android and iOS.
+        The Android and iOS runtime implementations consume the same generated manifest and
+        language-file contract. Asset generation is shared in the buildserver, while packaging and
+        runtime application are implemented separately for Android and iOS.
       </p>
 
       <h3>Separation of responsibilities</h3>
