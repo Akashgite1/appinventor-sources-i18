@@ -518,10 +518,10 @@
       "status": "merged",
       "statusLabel": "Merged",
       "statusTone": "purple",
-      "summary": "Introduced dynamic translation keys with positional placeholders ({0}, {1}), runtime text interpolation, and lookup functions across component blocks.",
+      "summary": "Introduces dynamic translation keys with named placeholders such as {name}, runtime text interpolation, and lookup functions across component blocks.",
       "highlights": [
-        "Dynamic translation key format with positional parameter syntax",
-        "Runtime placeholder substitution engine in components",
+        "Dynamic translation key format with named placeholder syntax ({name})",
+        "Runtime named-parameter substitution in components",
         "Dynamic string lookup with graceful fallback to primary text"
       ],
       "order": 1
@@ -588,7 +588,7 @@
       "highlights": [
         "Activity-owned I18nTranslationManager instance",
         "Decoupled Form rendering from translation storage",
-        "Persistent locale caching across multi-screen transitions"
+        "Translation-state cleanup through the Form clear path"
       ],
       "order": 3
     },
@@ -620,7 +620,7 @@
       "summary": "Optimized packaging by compiling translations into one lightweight manifest plus isolated, compact per-language JSON asset payloads.",
       "highlights": [
         "Modular manifest plus language asset partitioning",
-        "Significantly reduced APK and memory footprints",
+        "Loads only the selected language payload at runtime",
         "On-demand lazy loading of requested language payloads"
       ],
       "order": 4
@@ -715,11 +715,12 @@
       "status": "open",
       "statusLabel": "Open",
       "statusTone": "teal",
-      "summary": "Implemented comprehensive translation workspace with language navigation sidebar, real-time search filtering, and pagination.",
+      "summary": "Introduces static and dynamic translation workspaces, independent search, pagination up to 20 rows per page, and responsive Classic and Neo styling.",
       "highlights": [
-        "Language navigation sidebar with translation completion statistics",
-        "Real-time key and string search filter with highlighting",
-        "Paginated entry table handling large projects smoothly"
+        "Static and dynamic translation workspaces",
+        "Independent search for both workspaces",
+        "Pagination with up to 20 rows per page",
+        "Responsive Classic and Neo styling"
       ],
       "order": 7
     },
@@ -747,11 +748,11 @@
       "status": "open",
       "statusLabel": "Open",
       "statusTone": "teal",
-      "summary": "Built interactive language configuration modal with catalog selection, custom language tags, and canonical BCP-47 validation.",
+      "summary": "Adds a first-time language setup page and sidebar controls for configuring project languages, custom tags, and supported language-tag forms.",
       "highlights": [
-        "Searchable language catalog modal with predefined languages",
-        "Custom BCP-47 tag validation (script, region, and numeric forms)",
-        "Primary vs target language designation and fallback rules"
+        "First-time language setup page and sidebar language controls",
+        "Predefined language catalog and custom language-tag entry",
+        "Primary and target language configuration with fallback rules"
       ],
       "order": 8
     },
@@ -782,7 +783,7 @@
       "status": "draft",
       "statusLabel": "Draft",
       "statusTone": "gray",
-      "summary": "Complete Swift runtime implementation matching Android parity: asset loading, locale fallback, pre-initialize application, dynamic APIs, and iOS Companion preview.",
+      "summary": "Introduces the Swift runtime implementation for iOS translations (Draft), including asset loading, locale fallback, pre-initialize application, dynamic APIs, and iOS Companion preview.",
       "highlights": [
         "Swift I18nTranslationManager and I18nFormatter implementation",
         "Buildserver iOS asset extraction task (GenerateI18nTranslationAssets)",
