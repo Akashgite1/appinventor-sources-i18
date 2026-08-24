@@ -73,8 +73,7 @@ export function ContributionMapSection({
 
       <p>
         This interactive tree is generated from public GitHub data across the tracked i18n
-        pull-request stack. Select a branch to inspect every file in that functional layer and see
-        whether it was created or modified.
+        pull-request stack. Select an implementation layer to inspect its changed files.
       </p>
 
       {/* Impact summary bar */}
