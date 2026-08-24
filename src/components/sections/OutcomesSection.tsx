@@ -10,7 +10,7 @@ export function OutcomesSection() {
         The project establishes one translation source of truth in each App Inventor project. The
         editor discovers translatable Designer content, creators add languages and translations in a
         dedicated workspace, and the build pipeline converts that source into compact runtime assets
-        for both platforms.
+        for Android and iOS build targets.
       </p>
 
       {/* Hero Architecture Callout Banner */}
@@ -32,10 +32,10 @@ export function OutcomesSection() {
               <Icon name="sparkles" /> Single source of truth
             </span>
             <span className="outcomes-tag">
-              <Icon name="code" /> Zero runtime overhead
+              <Icon name="code" /> Generated per-language assets
             </span>
             <span className="outcomes-tag">
-              <Icon name="globe" /> Native i18n APIs
+              <Icon name="globe" /> Runtime translation APIs
             </span>
           </div>
         </div>
@@ -76,7 +76,7 @@ export function OutcomesSection() {
           <ul className="outcome-card-highlights">
             <li>Component rename safety</li>
             <li>Orphaned entry cleanup</li>
-            <li>Canonical BCP-47 language tags</li>
+            <li>Supported language-tag forms</li>
           </ul>
         </article>
 
